@@ -1609,6 +1609,315 @@ dependencies = [
 ]
 
 [[package]]
+name = "flick_ai"
+version = "1.0.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "flick_ipc",
+ "flick_shared",
+ "image",
+ "log",
+ "ort",
+ "realfft",
+ "serde_json",
+ "simplelog",
+]
+
+[[package]]
+name = "flick_build_support"
+version = "0.1.0"
+
+[[package]]
+name = "flick_capture"
+version = "1.0.0"
+dependencies = [
+ "anyhow",
+ "arboard",
+ "block2 0.6.2",
+ "bytemuck",
+ "clap",
+ "egui",
+ "egui_extras",
+ "egui_plot",
+ "euclid",
+ "flick_desktop",
+ "flick_hotkeys",
+ "flick_ipc",
+ "flick_platform",
+ "flick_shared",
+ "flick_telemetry",
+ "fontdb 0.24.0",
+ "image",
+ "libblur",
+ "libc",
+ "libloading 0.9.0",
+ "log",
+ "naga",
+ "objc2 0.6.5",
+ "objc2-app-kit 0.3.2",
+ "objc2-core-foundation",
+ "objc2-core-graphics",
+ "objc2-foundation 0.3.2",
+ "objc2-metal 0.3.2",
+ "objc2-quartz-core 0.3.2",
+ "rfd",
+ "sentry",
+ "serde",
+ "serde_json",
+ "simplelog",
+ "skrifa 0.44.0",
+ "windows",
+ "winit",
+ "xdialog",
+]
+
+[[package]]
+name = "flick_codegen"
+version = "1.0.0"
+dependencies = [
+ "anyhow",
+ "csbindgen",
+ "flick_hotkeys",
+ "flick_ipc",
+ "flick_shared",
+ "proc-macro2",
+ "quote",
+ "serde_json",
+ "syn 2.0.119",
+]
+
+[[package]]
+name = "flick_desktop"
+version = "1.0.0"
+dependencies = [
+ "euclid",
+ "flick_shared",
+ "log",
+ "objc2-app-kit 0.3.2",
+ "objc2-core-foundation",
+ "objc2-core-graphics",
+ "windows",
+]
+
+[[package]]
+name = "flick_ffmpeg_sys"
+version = "0.1.0"
+dependencies = [
+ "bindgen",
+ "flick_build_support",
+ "libc",
+]
+
+[[package]]
+name = "flick_hotkeys"
+version = "1.0.0"
+dependencies = [
+ "block2 0.6.2",
+ "dispatch2",
+ "flick_platform",
+ "objc2 0.6.5",
+ "objc2-app-kit 0.3.2",
+ "objc2-core-foundation",
+ "objc2-core-graphics",
+ "serde_json",
+ "windows",
+]
+
+[[package]]
+name = "flick_interop"
+version = "1.0.0"
+dependencies = [
+ "flick_desktop",
+ "flick_hotkeys",
+ "flick_ipc",
+ "flick_platform",
+ "flick_shared",
+ "libc",
+ "libloading 0.9.0",
+ "objc2 0.6.5",
+ "objc2-app-kit 0.3.2",
+ "objc2-audio-toolbox",
+ "objc2-av-foundation",
+ "objc2-core-audio",
+ "objc2-core-audio-types",
+ "objc2-core-foundation",
+ "objc2-core-graphics",
+ "objc2-foundation 0.3.2",
+ "objc2-metal 0.3.2",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
+ "windows",
+ "windows-core",
+]
+
+[[package]]
+name = "flick_ipc"
+version = "1.0.0"
+dependencies = [
+ "ctrlc",
+ "libc",
+ "serde",
+ "serde_json",
+ "windows",
+]
+
+[[package]]
+name = "flick_obs"
+version = "0.1.0"
+dependencies = [
+ "flick_build_support",
+ "flick_obs_sys",
+]
+
+[[package]]
+name = "flick_obs_platform"
+version = "0.1.0"
+dependencies = [
+ "flick_build_support",
+ "flick_desktop",
+ "flick_obs",
+ "flick_obs_sys",
+ "flick_platform",
+ "flick_shared",
+ "libc",
+ "objc2 0.6.5",
+ "objc2-app-kit 0.3.2",
+ "objc2-core-graphics",
+ "objc2-foundation 0.3.2",
+ "windows",
+]
+
+[[package]]
+name = "flick_obs_sys"
+version = "0.1.0"
+dependencies = [
+ "bindgen",
+ "flick_build_support",
+]
+
+[[package]]
+name = "flick_platform"
+version = "1.0.0"
+dependencies = [
+ "objc2-core-foundation",
+ "objc2-core-graphics",
+ "windows",
+]
+
+[[package]]
+name = "flick_recorder"
+version = "0.11.0"
+dependencies = [
+ "anyhow",
+ "base64 0.23.1",
+ "clap",
+ "flick_build_support",
+ "flick_hotkeys",
+ "flick_ipc",
+ "flick_obs",
+ "flick_obs_platform",
+ "flick_obs_sys",
+ "flick_platform",
+ "flick_shared",
+ "flick_telemetry",
+ "image",
+ "libc",
+ "objc2-core-foundation",
+ "objc2-core-graphics",
+ "serde",
+ "serde_json",
+ "windows",
+]
+
+[[package]]
+name = "flick_scroll_driver"
+version = "1.0.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "flick_desktop",
+ "flick_ipc",
+ "flick_platform",
+ "flick_shared",
+ "flick_telemetry",
+ "log",
+ "objc2-app-kit 0.3.2",
+ "objc2-core-foundation",
+ "objc2-core-graphics",
+ "serde_json",
+ "simplelog",
+ "windows",
+]
+
+[[package]]
+name = "flick_share_region"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "flick_build_support",
+ "flick_desktop",
+ "flick_ipc",
+ "flick_obs",
+ "flick_obs_platform",
+ "flick_obs_sys",
+ "flick_shared",
+ "flick_telemetry",
+ "libc",
+ "objc2 0.6.5",
+ "objc2-app-kit 0.3.2",
+ "objc2-foundation 0.3.2",
+ "serde_json",
+ "windows",
+]
+
+[[package]]
+name = "flick_shared"
+version = "1.0.0"
+dependencies = [
+ "anyhow",
+ "euclid",
+ "flick_ipc",
+ "image",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "flick_shell_ext"
+version = "1.0.4"
+dependencies = [
+ "flick_platform",
+ "windows",
+ "windows-core",
+]
+
+[[package]]
+name = "flick_telemetry"
+version = "1.0.0"
+dependencies = [
+ "anyhow",
+ "flick_shared",
+ "log",
+ "sentry",
+]
+
+[[package]]
+name = "flick_vid2gif"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "flick_build_support",
+ "flick_ffmpeg_sys",
+ "flick_ipc",
+ "flick_telemetry",
+ "libwebp-sys",
+ "serde_json",
+]
+
+[[package]]
 name = "float-cmp"
 version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3688,315 +3997,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dc0d895b311e3af9902528fbb8f928688abbd95872819320517cc24ca6b2bd08"
 dependencies = [
  "num-integer",
-]
-
-[[package]]
-name = "flick_ai"
-version = "1.0.0"
-dependencies = [
- "anyhow",
- "clap",
- "image",
- "log",
- "ort",
- "flick_ipc",
- "flick_shared",
- "realfft",
- "serde_json",
- "simplelog",
-]
-
-[[package]]
-name = "flick_build_support"
-version = "0.1.0"
-
-[[package]]
-name = "flick_capture"
-version = "1.0.0"
-dependencies = [
- "anyhow",
- "arboard",
- "block2 0.6.2",
- "bytemuck",
- "clap",
- "egui",
- "egui_extras",
- "egui_plot",
- "euclid",
- "fontdb 0.24.0",
- "image",
- "libblur",
- "libc",
- "libloading 0.9.0",
- "log",
- "naga",
- "objc2 0.6.5",
- "objc2-app-kit 0.3.2",
- "objc2-core-foundation",
- "objc2-core-graphics",
- "objc2-foundation 0.3.2",
- "objc2-metal 0.3.2",
- "objc2-quartz-core 0.3.2",
- "flick_desktop",
- "flick_hotkeys",
- "flick_ipc",
- "flick_platform",
- "flick_shared",
- "flick_telemetry",
- "rfd",
- "sentry",
- "serde",
- "serde_json",
- "simplelog",
- "skrifa 0.44.0",
- "windows",
- "winit",
- "xdialog",
-]
-
-[[package]]
-name = "flick_codegen"
-version = "1.0.0"
-dependencies = [
- "anyhow",
- "csbindgen",
- "flick_hotkeys",
- "flick_ipc",
- "flick_shared",
- "proc-macro2",
- "quote",
- "serde_json",
- "syn 2.0.119",
-]
-
-[[package]]
-name = "flick_desktop"
-version = "1.0.0"
-dependencies = [
- "euclid",
- "log",
- "objc2-app-kit 0.3.2",
- "objc2-core-foundation",
- "objc2-core-graphics",
- "flick_shared",
- "windows",
-]
-
-[[package]]
-name = "flick_ffmpeg_sys"
-version = "0.1.0"
-dependencies = [
- "bindgen",
- "libc",
- "flick_build_support",
-]
-
-[[package]]
-name = "flick_hotkeys"
-version = "1.0.0"
-dependencies = [
- "block2 0.6.2",
- "dispatch2",
- "objc2 0.6.5",
- "objc2-app-kit 0.3.2",
- "objc2-core-foundation",
- "objc2-core-graphics",
- "flick_platform",
- "serde_json",
- "windows",
-]
-
-[[package]]
-name = "flick_interop"
-version = "1.0.0"
-dependencies = [
- "libc",
- "libloading 0.9.0",
- "objc2 0.6.5",
- "objc2-app-kit 0.3.2",
- "objc2-audio-toolbox",
- "objc2-av-foundation",
- "objc2-core-audio",
- "objc2-core-audio-types",
- "objc2-core-foundation",
- "objc2-core-graphics",
- "objc2-foundation 0.3.2",
- "objc2-metal 0.3.2",
- "flick_desktop",
- "flick_hotkeys",
- "flick_ipc",
- "flick_platform",
- "flick_shared",
- "proc-macro2",
- "quote",
- "syn 2.0.119",
- "windows",
- "windows-core",
-]
-
-[[package]]
-name = "flick_ipc"
-version = "1.0.0"
-dependencies = [
- "ctrlc",
- "libc",
- "serde",
- "serde_json",
- "windows",
-]
-
-[[package]]
-name = "flick_obs"
-version = "0.1.0"
-dependencies = [
- "flick_build_support",
- "flick_obs_sys",
-]
-
-[[package]]
-name = "flick_obs_platform"
-version = "0.1.0"
-dependencies = [
- "libc",
- "objc2 0.6.5",
- "objc2-app-kit 0.3.2",
- "objc2-core-graphics",
- "objc2-foundation 0.3.2",
- "flick_build_support",
- "flick_desktop",
- "flick_obs",
- "flick_obs_sys",
- "flick_platform",
- "flick_shared",
- "windows",
-]
-
-[[package]]
-name = "flick_obs_sys"
-version = "0.1.0"
-dependencies = [
- "bindgen",
- "flick_build_support",
-]
-
-[[package]]
-name = "flick_platform"
-version = "1.0.0"
-dependencies = [
- "objc2-core-foundation",
- "objc2-core-graphics",
- "windows",
-]
-
-[[package]]
-name = "flick_recorder"
-version = "0.11.0"
-dependencies = [
- "anyhow",
- "base64 0.23.1",
- "clap",
- "image",
- "libc",
- "objc2-core-foundation",
- "objc2-core-graphics",
- "flick_build_support",
- "flick_hotkeys",
- "flick_ipc",
- "flick_obs",
- "flick_obs_platform",
- "flick_obs_sys",
- "flick_platform",
- "flick_shared",
- "flick_telemetry",
- "serde",
- "serde_json",
- "windows",
-]
-
-[[package]]
-name = "flick_scroll_driver"
-version = "1.0.0"
-dependencies = [
- "anyhow",
- "clap",
- "log",
- "objc2-app-kit 0.3.2",
- "objc2-core-foundation",
- "objc2-core-graphics",
- "flick_desktop",
- "flick_ipc",
- "flick_platform",
- "flick_shared",
- "flick_telemetry",
- "serde_json",
- "simplelog",
- "windows",
-]
-
-[[package]]
-name = "flick_share_region"
-version = "0.1.0"
-dependencies = [
- "clap",
- "libc",
- "objc2 0.6.5",
- "objc2-app-kit 0.3.2",
- "objc2-foundation 0.3.2",
- "flick_build_support",
- "flick_desktop",
- "flick_ipc",
- "flick_obs",
- "flick_obs_platform",
- "flick_obs_sys",
- "flick_shared",
- "flick_telemetry",
- "serde_json",
- "windows",
-]
-
-[[package]]
-name = "flick_shared"
-version = "1.0.0"
-dependencies = [
- "anyhow",
- "euclid",
- "image",
- "flick_ipc",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "flick_shell_ext"
-version = "1.0.4"
-dependencies = [
- "flick_platform",
- "windows",
- "windows-core",
-]
-
-[[package]]
-name = "flick_telemetry"
-version = "1.0.0"
-dependencies = [
- "anyhow",
- "log",
- "flick_shared",
- "sentry",
-]
-
-[[package]]
-name = "flick_vid2gif"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "clap",
- "libwebp-sys",
- "flick_build_support",
- "flick_ffmpeg_sys",
- "flick_ipc",
- "flick_telemetry",
- "serde_json",
 ]
 
 [[package]]

@@ -8,6 +8,6 @@ namespace Flick.Interop
     /// The loader refuses a library whose <c>flick_interop_abi_hash</c> differs.</summary>
     internal static class InteropAbi
     {
-        public const ulong Hash = 0x3CF304D521F5AC75UL;
+        public const ulong Hash = 0x808736E8D8B6AAA1UL;
     }
 }
