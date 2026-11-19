@@ -1,212 +1,58 @@
 <p align="center">
-  <a href="https://prisc.app"><img src="assets/readme/banner.png" alt="Prisc, formerly Clowd: capture, annotate, record and edit anything. Free and open source for Windows and macOS." width="100%"></a>
+  <img src="assets/readme/banner.png" alt="Flick" width="100%">
 </p>
 
 <h3 align="center">Capture, annotate, record and edit anything, all in one app.</h3>
 
 <p align="center">
-  Pixel-perfect screenshots, scrolling capture, on-device OCR, draw on screen, screen recording and a real multi-track video editor.<br>
-  It lives in your tray, wakes up when you press <kbd>PrtScn</kbd>, and gets out of your way the moment you're done.<br>
-  <b>Free and open source. No account, no trial, no watermark.</b>
+  Screenshots, scrolling capture, on-device OCR, draw on screen, screen recording and a multi-track video editor.<br>
+  It lives in your tray and wakes up when you press <kbd>PrtScn</kbd>.
 </p>
 
 > [!NOTE]
-> **Clowd is now Prisc.** Same app, new name. Existing installs keep updating automatically, and your settings and captures carry over.
-
-https://github.com/user-attachments/assets/9aa1b37f-cd94-4b0a-ac25-0c002d3c4f4a
-
----
-
-## Everything in one tray icon
-
-Capture it, annotate it, record it, edit it, share it. Every feature is a switch, so you can turn off whatever you don't use and it disappears.
-
-- [Video editor](#video-editor): from raw recording to share-ready
-- [Screen recording](#screen-recording): record once, polish it later
-- [Draw on screen](#draw-on-screen): draw on anything, then get back to work
-- [Screenshots](#screenshots): snap a window or crop to the pixel
-- [OCR](#ocr): copy text from anything on screen
-- [Color Wheel](#color-wheel): pick any color on screen, build a palette
-- [Scrolling capture](#scrolling-capture): the whole page in one image
-- [Image editor](#image-editor): arrows, steps and blur, one key each
-- [Share region](#share-region): share just part of your screen in any meeting
-- [Upload & share](#upload--share): instant links to your own storage
+> **Flick is a modified version of [Prisc](https://github.com/priscapp/Prisc) by Caelan Sayler.**
+> It is not the original Prisc, and it is not made, endorsed or supported by Caelan Sayler.
+> Bugs in Flick belong in [this repository's issues](https://github.com/DenisChepel/flick/issues), not upstream's.
 
 ---
+
+## Features
+
+- **Screenshots**: snap a window or crop to the pixel, with a magnifier.
+- **Scrolling capture**: the whole page in one image.
+- **OCR**: copy text from anything on screen, on-device.
+- **Draw on screen**: draw over the desktop, then get back to work.
+- **Image editor**: arrows, steps, blur and text.
+- **Color wheel**: pick any color on screen and build a palette.
+- **Screen recording**: screen, webcam, microphone and system audio on separate tracks.
+- **Video editor**: a real timeline with zoom, speed, cursor styling and backgrounds.
+- **Share region**: share just part of your screen in any meeting.
+- **Upload & share**: instant links to your own storage.
 
 ## Download
 
-**Every feature is in the free download. No trial, no watermark.** Installed builds keep themselves up to date, and only update after you've been idle for a while, never mid-capture. Experimental builds can be opted into in Settings.
+Every push to this repository is built by GitHub Actions. Open the
+[Actions tab](https://github.com/DenisChepel/flick/actions/workflows/ci.yml), pick the latest green
+run and download the **`flick-win-x64`** artifact (or the build for your platform). Unzip it anywhere
+and run `Flick.Ui.exe`.
 
-| Platform | Installer | Portable |
-| --- | --- | --- |
-| Windows x64 | [Prisc-win-x64-Setup.exe](https://github.com/priscapp/Prisc/releases/latest/download/Prisc-win-x64-Setup.exe) | [Prisc-win-x64-Portable.zip](https://github.com/priscapp/Prisc/releases/latest/download/Prisc-win-x64-Portable.zip) |
-| Windows arm64 | [Prisc-win-arm64-Setup.exe](https://github.com/priscapp/Prisc/releases/latest/download/Prisc-win-arm64-Setup.exe) | [Prisc-win-arm64-Portable.zip](https://github.com/priscapp/Prisc/releases/latest/download/Prisc-win-arm64-Portable.zip) |
-| macOS Apple Silicon | [Prisc-osx-arm64-Setup.pkg](https://github.com/priscapp/Prisc/releases/latest/download/Prisc-osx-arm64-Setup.pkg) | [Prisc-osx-arm64-Portable.zip](https://github.com/priscapp/Prisc/releases/latest/download/Prisc-osx-arm64-Portable.zip) |
-| macOS Intel | [Prisc-osx-x64-Setup.pkg](https://github.com/priscapp/Prisc/releases/latest/download/Prisc-osx-x64-Setup.pkg) | [Prisc-osx-x64-Portable.zip](https://github.com/priscapp/Prisc/releases/latest/download/Prisc-osx-x64-Portable.zip) |
+The builds are not code-signed, so Windows SmartScreen asks first: choose **More info → Run anyway**.
 
 Requires Windows 10+ or macOS 13.4+.
 
----
+## Building from source
 
-## Video editor
-
-**A real timeline, not a trimmer.** Zoom in where attention should land, skip the waiting, restyle the cursor and drop it on a polished background. From raw recording to share-ready.
-
-<p align="center"><a href="https://prisc.app/features/video-editor"><img src="assets/readme/video-editor.webp" alt="The video editor plays a recording through a 1.5× zoom and a 2× speed stretch" width="720"></a></p>
-
-- **Zoom and speed.** Zoom in where it matters, and skip the boring parts at up to 10×.
-- **Restyle it after you record.** Cursor packs, click effects and live keystroke overlays, all changeable later.
-- **Backgrounds in one click.** Rounded corners, shadow and a backdrop that makes any recording look finished.
-- **On-device AI.** The Speech Enhancer cleans up your voice and background removal cuts out your webcam, on your own GPU.
-- **What you see is what you get.** The preview and the export match frame for frame, and it saves as you go.
-
-**[Learn more about the video editor →](https://prisc.app/features/video-editor)**
-
----
-
-## Screen recording
-
-**Record once, decide later.** Screen, webcam, microphone and system audio each land on their own track, so nothing is baked in until you say so.
-
-<p align="center"><a href="https://prisc.app/features/screen-recording"><img src="assets/readme/screen-recording.webp" alt="The recording toolbar under a framed window: Start, the timer runs, the meters move" width="720"></a></p>
-
-- **Separate tracks.** Screen, webcam, mic and system audio, each on its own row in the editor.
-- **Cursor you can restyle.** The cursor, clicks and keystrokes are recorded as data, so you can change them after you stop.
-- **Up to 240 fps.** Smooth enough for fast-moving demos, with a live frame counter as you record.
-- **Crash-safe.** Hardware encoding when your GPU has it, and a power cut doesn't cost you the recording.
-
-**[Learn more about screen recording →](https://prisc.app/features/screen-recording)**
-
----
-
-## Draw on screen
-
-**Draw on anything, then click straight through to your apps.** Walkthroughs, onboarding and code reviews that feel like you're sitting next to them.
-
-<p align="center"><a href="https://prisc.app/features/draw-on-screen"><img src="assets/readme/draw-on-screen.webp" alt="Draw on Screen: a brush loop, an arrow and numbered badges over a form, then click-through" width="720"></a></p>
-
-- **Draw, then <kbd>Esc</kbd>.** Your ink stays on screen while you click, scroll and type underneath it.
-- **Live keystrokes.** Every shortcut you press shows up on screen, so nobody has to ask what you just did.
-- **Every tool is one key.** You never break stride mid-sentence.
-- **Freeze the frame or keep it live.** Draw on a still, or right over a playing video.
-- **One undo for every screen.** Undo works across all your monitors, in the order you drew.
-
-**[Learn more about Draw on Screen →](https://prisc.app/features/draw-on-screen)**
-
----
-
-## Screenshots
-
-**Press <kbd>PrtScn</kbd>. It's already there.** Snap to a whole window in one click, or zoom in and crop to the exact pixel. Then take it anywhere in Prisc with a single key.
-
-<p align="center"><a href="https://prisc.app/features/capture"><img src="assets/readme/capture.webp" alt="PrtScn freezes the screen, the selection snaps to a window, Copy" width="720"></a></p>
-
-- **Opens instantly.** The screen is frozen and ready the moment you press the key.
-- **Click a window, get the window.** Even one that's partly hidden behind another, with its rounded corners kept transparent.
-- **Zoom to the pixel.** Scroll to zoom in up to 256× and place the edge exactly where you want it.
-- **Keyboard first.** Every button is one letter. <kbd>Enter</kbd> edits, <kbd>Esc</kbd> backs out.
-- **Built-in color picker.** Press <kbd>H</kbd> on any pixel for its HEX, RGB or HSL.
-- **Owns <kbd>PrtScn</kbd>,** even on Windows 11.
-
-**[Learn more about the capture overlay →](https://prisc.app/features/capture)**
-
----
-
-## OCR
-
-**Copy text from anything on screen.** Screenshots, videos, error dialogs: anywhere you can't normally select text.
-
-<p align="center"><a href="https://prisc.app/features/ocr"><img src="assets/readme/ocr.webp" alt="Text recognition lifts every line of an error dialog off the screen" width="720"></a></p>
-
-- **Private.** Text is read on your computer. No cloud, no API key, no language pack to install.
-- **Check it first.** Every line lifts off the screenshot, so you see what it read before you use it.
-- **One key out.** Copy it, search the web for it or share it as a paste in a single keypress.
-- **Reads the hard stuff.** Small type, dark mode and low contrast.
-
-**[Learn more about OCR →](https://prisc.app/features/ocr)**
-
----
-
-## Color Wheel
-
-**Find a color. Build a palette.** Match any color on screen, pull a palette from a photo, or build a balanced scheme from one color. Every value copies in a click, ready to paste.
-
-<p align="center"><a href="https://prisc.app/features/color-wheel"><img src="assets/readme/color-wheel.webp" alt="Color Wheel: the eyedropper drags across a photo and the whole palette re-colors live around each color it touches" width="720"></a></p>
-
-- **Any color on screen.** Drag the eyedropper over any app with a live preview, and press <kbd>Esc</kbd> mid-drag to get the old color back.
-- **Palette from a photo.** Drop in a picture and get five colors, with a mood for each: Colorful, Bright, Muted, Deep or Dark.
-- **Harmonies that hold their shape.** Eight classic schemes from one color. Drag one on the wheel and the rest turn with it.
-- **Lightness you can trust.** The Oklch editor keeps shades on the same hue, so lighter and darker never drift toward another color.
-- **Copy it the way you need it.** HEX, RGB, HSL or CSS `oklch()` in one click, or every hex in the palette at once.
-- **Open it from anywhere.** Press <kbd>H</kbd> over any pixel while you capture, pick it from the tray, or set your own hotkey.
-
-**[Learn more about the Color Wheel →](https://prisc.app/features/color-wheel)**
-
----
-
-## Scrolling capture
-
-**The whole page, not just the part that fits.** A long article, a chat history, a settings page: Prisc scrolls it for you and stitches it into one tall image.
-
-<p align="center"><a href="https://prisc.app/features/scrolling-capture"><img src="assets/readme/scrolling-capture.webp" alt="Scrolling capture steps down a page while the stitched image grows" width="720"></a></p>
-
-- **Sticky headers appear once,** not repeated down the length of the image.
-- **Starts from the top.** It winds the page back first, so it doesn't matter where you were scrolled to.
-- **Stops on its own** when it reaches the end of the document.
-- **Take your mouse back whenever you like.** Moving the cursor pauses the capture; let go and it picks up where it left off.
-
-**[Learn more about scrolling capture →](https://prisc.app/features/scrolling-capture)**
-
----
-
-## Image editor
-
-**Mark it up. Send it. Move on.** Curved arrows, numbered steps that point, and redaction that never blurs your notes. One key per tool.
-
-<p align="center"><a href="https://prisc.app/features/image-editor"><img src="assets/readme/image-editor.webp" alt="The image editor: an arrow bent into a curve, numbered steps, a mosaic and a text card" width="720"></a></p>
-
-- **15 tools, one key each.** <kbd>R</kbd> for a rectangle, <kbd>A</kbd> for an arrow, <kbd>O</kbd> to hide a password.
-- **Objects stay editable.** Move, restyle or delete anything you drew, at any point.
-- **Sessions autosave.** Restart your PC and your open editors come back, annotations intact.
-- **Pin it on top** so a capture stays visible while you work.
-
-**[Learn more about the image editor →](https://prisc.app/features/image-editor)**
-
----
-
-## Share region
-
-**Share any rectangle, in any meeting app.** Meeting apps share a whole screen or one window. Prisc lets you share exactly the part that matters, in Teams, Zoom, Meet or anything else.
-
-<p align="center"><a href="https://prisc.app/features/share-region"><img src="assets/readme/share-region.webp" alt="Share Region: Hide blurs what the meeting sees while the presenter's screen stays clear" width="720"></a></p>
-
-- **A panic button.** Blur or black out the share without stopping it.
-- **Move it mid-meeting.** Reframe the region and nobody has to re-share.
-- **Every control outside the frame,** so the meeting never sees them.
-- **Point at things.** Draw on screen and the meeting sees it.
-
-**[Learn more about Share Region →](https://prisc.app/features/share-region)**
-
----
-
-## Upload & share
-
-**Your storage, your rules.** Share a screenshot, a recording or a whole folder, and the link is on your clipboard before the upload has finished.
-
-<p align="center"><a href="https://prisc.app/features/upload-share"><img src="assets/readme/upload-share.webp" alt="A capture is copied, then Upload Clipboard from the tray: the link is copied at once while the recipient's browser streams it" width="720"></a></p>
-
-- **Instant links.** With accelerated uploads, the link is copied the moment the upload *starts*, and recipients can start watching while you're still uploading.
-- **Your bucket, your keys.** Amazon S3 (and S3-compatible), Azure Blob Storage, Cloudflare R2 and Backblaze B2.
-- **Nothing kept on the way.** Accelerated uploads only pass through. Or switch them off and upload direct.
-- **Off until you want it.** One switch turns uploads off and every upload button disappears.
-
-**[Learn more about Upload & Share →](https://prisc.app/features/upload-share)**
-
----
+See [BUILDING.md](BUILDING.md).
 
 ## License
 
-Copyright © 2014–2026 Caelan Sayler.
+Flick is based on Prisc by Caelan Sayler (https://github.com/priscapp/Prisc).
 
-Prisc is free software: you can redistribute it and/or modify it under the terms of the [GNU General Public License](LICENSE) as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version, together with the additional terms in [NOTICE](NOTICE): forks must keep the attribution "Based on Prisc by Caelan Sayler" and must not use the Prisc name or logo. Building from source is covered in [BUILDING.md](BUILDING.md).
+Copyright © 2014–2026 Caelan Sayler. Modifications copyright © 2026 Denis Chepel.
+
+Flick is free software: you can redistribute it and/or modify it under the terms of the
+[GNU General Public License](LICENSE) as published by the Free Software Foundation, either version 3
+of the License, or (at your option) any later version, together with the additional terms in
+[NOTICE](NOTICE).
+
+“Prisc” and the Prisc logo are trademarks of Caelan Sayler; Flick does not use them.

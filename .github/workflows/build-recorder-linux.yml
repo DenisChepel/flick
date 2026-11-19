@@ -18,7 +18,7 @@ jobs:
   # Linux: built inside tools/linux-build/Dockerfile, a manylinux_2_34
   # (AlmaLinux 9, glibc 2.34) image, so the bundle runs on any distro with
   # glibc >= 2.34 (Ubuntu 22.04+, Debian 12+, Fedora / RHEL 9+) rather than
-  # only on the build machine's release. prisc_obs_sys downloads the pinned
+  # only on the build machine's release. flick_obs_sys downloads the pinned
   # BtbN FFmpeg bundle (SHA-256 verified) and builds pinned x264 and Mbed TLS
   # from source (both static, private inside their plugins) into
   # crates/obs-studio/.deps, then libobs + the Linux plugins into target/obs-<arch>.
@@ -46,7 +46,7 @@ jobs:
         include:
           # Each arch builds natively on its own runner (no cross toolchain or
           # emulation): the manylinux base matches the runner's arch, and
-          # prisc_build_support pins the BtbN FFmpeg archive per arch.
+          # flick_build_support pins the BtbN FFmpeg archive per arch.
           - arch: x64
             runner: ubuntu-24.04
             base: quay.io/pypa/manylinux_2_34_x86_64
@@ -57,7 +57,7 @@ jobs:
       run:
         shell: bash
     env:
-      IMAGE: prisc-recorder-linux-${{ matrix.arch }}
+      IMAGE: flick-recorder-linux-${{ matrix.arch }}
     steps:
       - name: Checkout (recursive submodules)
         uses: actions/checkout@v7
@@ -109,14 +109,14 @@ jobs:
       - name: Resolve native dependency pins
         id: pins
         run: |
-          ffmpeg=$(grep -oP 'dir_name: "\K[^"]+' crates/prisc_build_support/src/linux.rs | sort | paste -sd+ || true)
-          x264=$(grep -oP 'const X264_COMMIT: &str = "\K[0-9a-f]+' crates/prisc_obs_sys/build.rs || true)
-          mbedtls=$(grep -oP 'const MBEDTLS_VERSION: &str = "\K[^"]+' crates/prisc_obs_sys/build.rs || true)
-          simde=$(grep -oP 'const SIMDE_COMMIT: &str = "\K[0-9a-f]+' crates/prisc_obs_sys/build.rs || true)
+          ffmpeg=$(grep -oP 'dir_name: "\K[^"]+' crates/flick_build_support/src/linux.rs | sort | paste -sd+ || true)
+          x264=$(grep -oP 'const X264_COMMIT: &str = "\K[0-9a-f]+' crates/flick_obs_sys/build.rs || true)
+          mbedtls=$(grep -oP 'const MBEDTLS_VERSION: &str = "\K[^"]+' crates/flick_obs_sys/build.rs || true)
+          simde=$(grep -oP 'const SIMDE_COMMIT: &str = "\K[0-9a-f]+' crates/flick_obs_sys/build.rs || true)
           for pin in ffmpeg x264 mbedtls simde; do
-            test -n "${!pin}" || { echo "::error::$pin pin not found in crates/prisc_build_support or crates/prisc_obs_sys/build.rs"; exit 1; }
+            test -n "${!pin}" || { echo "::error::$pin pin not found in crates/flick_build_support or crates/flick_obs_sys/build.rs"; exit 1; }
           done
-          image=$(cat tools/linux-build/Dockerfile crates/prisc_obs_sys/cmake/* | sha256sum | cut -c1-12)
+          image=$(cat tools/linux-build/Dockerfile crates/flick_obs_sys/cmake/* | sha256sum | cut -c1-12)
           echo "key=$ffmpeg-x264-${x264:0:12}-mbedtls-$mbedtls-simde-${simde:0:12}-image-$image" >> "$GITHUB_OUTPUT"
           echo "FFmpeg:  $ffmpeg"
           echo "x264:    $x264"
@@ -124,7 +124,7 @@ jobs:
           echo "SIMDe:   $simde"
           echo "Image:   $image"
 
-      # As on Windows, the OBS build (target/obs-<arch>, prisc_obs_sys's default
+      # As on Windows, the OBS build (target/obs-<arch>, flick_obs_sys's default
       # build dir) and .deps (FFmpeg bundle, x264 / Mbed TLS prefixes, SIMDe)
       # are cached together. The build runs as root in the image; the cache
       # steps run on the host and only need to read those files.
@@ -141,30 +141,30 @@ jobs:
           obs-build-path: target/obs-${{ matrix.arch }}
           key-suffix: -manylinux-${{ steps.pins.outputs.key }}
 
-      # prisc_share_region is not built on Linux at all (no Linux UI; see its
-      # README), and the app crates are not part of this job (prisc_scroll_driver
+      # flick_share_region is not built on Linux at all (no Linux UI; see its
+      # README), and the app crates are not part of this job (flick_scroll_driver
       # is a compile_error! on Linux), so every Linux cargo invocation names its
       # packages explicitly rather than using --workspace.
       - name: Build (release)
-        run: tools/linux-build/run-in-image.sh cargo build --release -p prisc_recorder -p prisc_vid2gif
+        run: tools/linux-build/run-in-image.sh cargo build --release -p flick_recorder -p flick_vid2gif
 
       - name: Test (release, unit tests only)
         run: |
           # No LD_LIBRARY_PATH needed: every test executable carries absolute
           # RUNPATHs to the OBS build tree and the FFmpeg bundle, set by the
-          # crates' build scripts. prisc_vid2gif links the bundled FFmpeg directly; its
-          # integration tests are self-contained. prisc_ffmpeg_sys verifies
-          # linkage + ABI version. prisc_recorder's smoke tests stay #[ignore]d
+          # crates' build scripts. flick_vid2gif links the bundled FFmpeg directly; its
+          # integration tests are self-contained. flick_ffmpeg_sys verifies
+          # linkage + ABI version. flick_recorder's smoke tests stay #[ignore]d
           # here, as on the other platforms; verify-bundle.sh records for real
-          # below. prisc_obs_sys and prisc_build_support have no #[test]s but
+          # below. flick_obs_sys and flick_build_support have no #[test]s but
           # compile the bindgen layout asserts under test.
-          tools/linux-build/run-in-image.sh cargo test --release -p prisc_recorder -p prisc_obs -p prisc_obs_platform -p prisc_vid2gif -p prisc_ffmpeg_sys -p prisc_obs_sys -p prisc_build_support
+          tools/linux-build/run-in-image.sh cargo test --release -p flick_recorder -p flick_obs -p flick_obs_platform -p flick_vid2gif -p flick_ffmpeg_sys -p flick_obs_sys -p flick_build_support
 
       # Scene-item placement across a canvas reset, against real libobs (it
       # needs a graphics context, hence Xvfb). This is the transform Wayland
       # picker mode depends on, and portal capture itself cannot run in CI.
       - name: Test canvas-reset placement (Xvfb)
-        run: tools/linux-build/run-in-image.sh xvfb-run -a -s "'-screen 0 1280x720x24'" cargo test --release -p prisc_recorder --test canvas_reset -- --ignored
+        run: tools/linux-build/run-in-image.sh xvfb-run -a -s "'-screen 0 1280x720x24'" cargo test --release -p flick_recorder --test canvas_reset -- --ignored
 
       # Copies the runtime tree out of target/release, strips the build-tree
       # RUNPATH entries, and enforces the relocation, glibc-ceiling and
@@ -173,11 +173,11 @@ jobs:
         run: tools/linux-build/run-in-image.sh tools/staging/stage-recorder.sh "linux-${{ matrix.arch }}" target/release "dist/recorder-linux-${{ matrix.arch }}"
 
       # ldd -r of every ELF file, real X11 recordings under Xvfb through xshm
-      # capture, x264, AAC and both muxers, prisc_vid2gif on a recording, and
+      # capture, x264, AAC and both muxers, flick_vid2gif on a recording, and
       # the out-of-scope fail-fast checks, all from a copy outside the checkout.
       # The ffprobe is the pinned FFmpeg archive's own (the image has no
       # FFmpeg of its own).
-      - name: Verify relocated bundle (ldd + Xvfb smoke recording + prisc_vid2gif)
+      - name: Verify relocated bundle (ldd + Xvfb smoke recording + flick_vid2gif)
         run: |
           # shellcheck disable=SC2016 # expanded inside the image, not here
           tools/linux-build/run-in-image.sh '
@@ -197,8 +197,8 @@ jobs:
             tarball="$dist.tar.gz"
             (cd "$dist" && tar --owner=0 --group=0 -czf "../$(basename "$tarball")" -- *)
             listing=$(tar -tvzf "$tarball")
-            grep -E " (prisc_recorder|prisc_vid2gif|obs-ffmpeg-mux)$" <<< "$listing"
-            grep -Eq "^-rwx.* prisc_recorder$" <<< "$listing" || { echo "::error::archive lost the execute bit"; exit 1; }
+            grep -E " (flick_recorder|flick_vid2gif|obs-ffmpeg-mux)$" <<< "$listing"
+            grep -Eq "^-rwx.* flick_recorder$" <<< "$listing" || { echo "::error::archive lost the execute bit"; exit 1; }
             ls -la "$tarball"
             # Probe tool for the portability job, uploaded separately and never
             # released: the ffprobe from the pinned FFmpeg archive runs against

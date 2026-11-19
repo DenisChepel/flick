@@ -5,13 +5,13 @@
 # the host's ~/.cargo, so CI's host-side cache of those dirs applies. Build
 # outputs (target/, crates/obs-studio/.deps) land in the checkout as usual.
 #
-#   docker build -t prisc-recorder-linux tools/linux-build
-#   tools/linux-build/run-in-image.sh cargo build --release -p prisc_recorder -p prisc_vid2gif
+#   docker build -t flick-recorder-linux tools/linux-build
+#   tools/linux-build/run-in-image.sh cargo build --release -p flick_recorder -p flick_vid2gif
 #
-# IMAGE overrides the image tag (default prisc-recorder-linux).
+# IMAGE overrides the image tag (default flick-recorder-linux).
 set -euo pipefail
 
-image=${IMAGE:-prisc-recorder-linux}
+image=${IMAGE:-flick-recorder-linux}
 root=$(git rev-parse --show-toplevel)
 mkdir -p "$HOME/.cargo/registry" "$HOME/.cargo/git"
 

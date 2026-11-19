@@ -1,0 +1,11 @@
+[package]
+name = "flick_obs"
+version = "0.1.0"
+edition = "2021"
+license.workspace = true
+
+[dependencies]
+flick_obs_sys = { workspace = true }
+
+[build-dependencies]
+flick_build_support = { workspace = true }

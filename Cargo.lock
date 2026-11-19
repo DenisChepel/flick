@@ -3691,7 +3691,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "prisc_ai"
+name = "flick_ai"
 version = "1.0.0"
 dependencies = [
  "anyhow",
@@ -3699,19 +3699,19 @@ dependencies = [
  "image",
  "log",
  "ort",
- "prisc_ipc",
- "prisc_shared",
+ "flick_ipc",
+ "flick_shared",
  "realfft",
  "serde_json",
  "simplelog",
 ]
 
 [[package]]
-name = "prisc_build_support"
+name = "flick_build_support"
 version = "0.1.0"
 
 [[package]]
-name = "prisc_capture"
+name = "flick_capture"
 version = "1.0.0"
 dependencies = [
  "anyhow",
@@ -3737,12 +3737,12 @@ dependencies = [
  "objc2-foundation 0.3.2",
  "objc2-metal 0.3.2",
  "objc2-quartz-core 0.3.2",
- "prisc_desktop",
- "prisc_hotkeys",
- "prisc_ipc",
- "prisc_platform",
- "prisc_shared",
- "prisc_telemetry",
+ "flick_desktop",
+ "flick_hotkeys",
+ "flick_ipc",
+ "flick_platform",
+ "flick_shared",
+ "flick_telemetry",
  "rfd",
  "sentry",
  "serde",
@@ -3755,14 +3755,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "prisc_codegen"
+name = "flick_codegen"
 version = "1.0.0"
 dependencies = [
  "anyhow",
  "csbindgen",
- "prisc_hotkeys",
- "prisc_ipc",
- "prisc_shared",
+ "flick_hotkeys",
+ "flick_ipc",
+ "flick_shared",
  "proc-macro2",
  "quote",
  "serde_json",
@@ -3770,7 +3770,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "prisc_desktop"
+name = "flick_desktop"
 version = "1.0.0"
 dependencies = [
  "euclid",
@@ -3778,21 +3778,21 @@ dependencies = [
  "objc2-app-kit 0.3.2",
  "objc2-core-foundation",
  "objc2-core-graphics",
- "prisc_shared",
+ "flick_shared",
  "windows",
 ]
 
 [[package]]
-name = "prisc_ffmpeg_sys"
+name = "flick_ffmpeg_sys"
 version = "0.1.0"
 dependencies = [
  "bindgen",
  "libc",
- "prisc_build_support",
+ "flick_build_support",
 ]
 
 [[package]]
-name = "prisc_hotkeys"
+name = "flick_hotkeys"
 version = "1.0.0"
 dependencies = [
  "block2 0.6.2",
@@ -3801,13 +3801,13 @@ dependencies = [
  "objc2-app-kit 0.3.2",
  "objc2-core-foundation",
  "objc2-core-graphics",
- "prisc_platform",
+ "flick_platform",
  "serde_json",
  "windows",
 ]
 
 [[package]]
-name = "prisc_interop"
+name = "flick_interop"
 version = "1.0.0"
 dependencies = [
  "libc",
@@ -3822,11 +3822,11 @@ dependencies = [
  "objc2-core-graphics",
  "objc2-foundation 0.3.2",
  "objc2-metal 0.3.2",
- "prisc_desktop",
- "prisc_hotkeys",
- "prisc_ipc",
- "prisc_platform",
- "prisc_shared",
+ "flick_desktop",
+ "flick_hotkeys",
+ "flick_ipc",
+ "flick_platform",
+ "flick_shared",
  "proc-macro2",
  "quote",
  "syn 2.0.119",
@@ -3835,7 +3835,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "prisc_ipc"
+name = "flick_ipc"
 version = "1.0.0"
 dependencies = [
  "ctrlc",
@@ -3846,15 +3846,15 @@ dependencies = [
 ]
 
 [[package]]
-name = "prisc_obs"
+name = "flick_obs"
 version = "0.1.0"
 dependencies = [
- "prisc_build_support",
- "prisc_obs_sys",
+ "flick_build_support",
+ "flick_obs_sys",
 ]
 
 [[package]]
-name = "prisc_obs_platform"
+name = "flick_obs_platform"
 version = "0.1.0"
 dependencies = [
  "libc",
@@ -3862,25 +3862,25 @@ dependencies = [
  "objc2-app-kit 0.3.2",
  "objc2-core-graphics",
  "objc2-foundation 0.3.2",
- "prisc_build_support",
- "prisc_desktop",
- "prisc_obs",
- "prisc_obs_sys",
- "prisc_platform",
- "prisc_shared",
+ "flick_build_support",
+ "flick_desktop",
+ "flick_obs",
+ "flick_obs_sys",
+ "flick_platform",
+ "flick_shared",
  "windows",
 ]
 
 [[package]]
-name = "prisc_obs_sys"
+name = "flick_obs_sys"
 version = "0.1.0"
 dependencies = [
  "bindgen",
- "prisc_build_support",
+ "flick_build_support",
 ]
 
 [[package]]
-name = "prisc_platform"
+name = "flick_platform"
 version = "1.0.0"
 dependencies = [
  "objc2-core-foundation",
@@ -3889,7 +3889,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "prisc_recorder"
+name = "flick_recorder"
 version = "0.11.0"
 dependencies = [
  "anyhow",
@@ -3899,22 +3899,22 @@ dependencies = [
  "libc",
  "objc2-core-foundation",
  "objc2-core-graphics",
- "prisc_build_support",
- "prisc_hotkeys",
- "prisc_ipc",
- "prisc_obs",
- "prisc_obs_platform",
- "prisc_obs_sys",
- "prisc_platform",
- "prisc_shared",
- "prisc_telemetry",
+ "flick_build_support",
+ "flick_hotkeys",
+ "flick_ipc",
+ "flick_obs",
+ "flick_obs_platform",
+ "flick_obs_sys",
+ "flick_platform",
+ "flick_shared",
+ "flick_telemetry",
  "serde",
  "serde_json",
  "windows",
 ]
 
 [[package]]
-name = "prisc_scroll_driver"
+name = "flick_scroll_driver"
 version = "1.0.0"
 dependencies = [
  "anyhow",
@@ -3923,18 +3923,18 @@ dependencies = [
  "objc2-app-kit 0.3.2",
  "objc2-core-foundation",
  "objc2-core-graphics",
- "prisc_desktop",
- "prisc_ipc",
- "prisc_platform",
- "prisc_shared",
- "prisc_telemetry",
+ "flick_desktop",
+ "flick_ipc",
+ "flick_platform",
+ "flick_shared",
+ "flick_telemetry",
  "serde_json",
  "simplelog",
  "windows",
 ]
 
 [[package]]
-name = "prisc_share_region"
+name = "flick_share_region"
 version = "0.1.0"
 dependencies = [
  "clap",
@@ -3942,60 +3942,60 @@ dependencies = [
  "objc2 0.6.5",
  "objc2-app-kit 0.3.2",
  "objc2-foundation 0.3.2",
- "prisc_build_support",
- "prisc_desktop",
- "prisc_ipc",
- "prisc_obs",
- "prisc_obs_platform",
- "prisc_obs_sys",
- "prisc_shared",
- "prisc_telemetry",
+ "flick_build_support",
+ "flick_desktop",
+ "flick_ipc",
+ "flick_obs",
+ "flick_obs_platform",
+ "flick_obs_sys",
+ "flick_shared",
+ "flick_telemetry",
  "serde_json",
  "windows",
 ]
 
 [[package]]
-name = "prisc_shared"
+name = "flick_shared"
 version = "1.0.0"
 dependencies = [
  "anyhow",
  "euclid",
  "image",
- "prisc_ipc",
+ "flick_ipc",
  "serde",
  "serde_json",
 ]
 
 [[package]]
-name = "prisc_shell_ext"
+name = "flick_shell_ext"
 version = "1.0.4"
 dependencies = [
- "prisc_platform",
+ "flick_platform",
  "windows",
  "windows-core",
 ]
 
 [[package]]
-name = "prisc_telemetry"
+name = "flick_telemetry"
 version = "1.0.0"
 dependencies = [
  "anyhow",
  "log",
- "prisc_shared",
+ "flick_shared",
  "sentry",
 ]
 
 [[package]]
-name = "prisc_vid2gif"
+name = "flick_vid2gif"
 version = "0.1.0"
 dependencies = [
  "anyhow",
  "clap",
  "libwebp-sys",
- "prisc_build_support",
- "prisc_ffmpeg_sys",
- "prisc_ipc",
- "prisc_telemetry",
+ "flick_build_support",
+ "flick_ffmpeg_sys",
+ "flick_ipc",
+ "flick_telemetry",
  "serde_json",
 ]
 

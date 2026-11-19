@@ -15,7 +15,7 @@ inputs:
     description: The leg's architecture (x64 or arm64). runner.os is the same for both arches of an OS, so it must be in every key.
     required: true
   obs-build-path:
-    description: Where prisc_obs_sys leaves the OBS build tree on this OS (newline-separated paths and globs).
+    description: Where flick_obs_sys leaves the OBS build tree on this OS (newline-separated paths and globs).
     required: true
   key-suffix:
     description: Further inputs of the native build that no hashed file covers (Linux's dependency pins).
@@ -51,4 +51,4 @@ runs:
         path: |
           ${{ inputs.obs-build-path }}
           crates/obs-studio/.deps
-        key: ${{ runner.os }}-${{ inputs.arch }}-obs-${{ steps.obs.outputs.sha }}-${{ hashFiles('crates/prisc_obs_sys/build.rs', 'crates/prisc_obs_sys/cmake/**', 'crates/prisc_build_support/src/**') }}${{ inputs.key-suffix }}
+        key: ${{ runner.os }}-${{ inputs.arch }}-obs-${{ steps.obs.outputs.sha }}-${{ hashFiles('crates/flick_obs_sys/build.rs', 'crates/flick_obs_sys/cmake/**', 'crates/flick_build_support/src/**') }}${{ inputs.key-suffix }}

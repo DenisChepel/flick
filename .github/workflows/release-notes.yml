@@ -85,8 +85,8 @@ jobs:
           fi
           echo "EXCLUDE=$EXCLUDE" >> "$GITHUB_ENV"
 
-          # The release that ships the rename to Prisc gets a section announcing it: the commit
-          # "Rename Clowd to Prisc in code and build the recorder in-repo", pinned by sha so a later
+          # The release that ships the rename to Flick gets a section announcing it: the commit
+          # "Rename Clowd to Flick in code and build the recorder in-repo", pinned by sha so a later
           # commit reusing that subject cannot take its place. Empty unless it is inside the range.
           # A missing object (a history rewrite, a shallow clone) fails the job rather than
           # silently dropping the section.
@@ -158,7 +158,7 @@ jobs:
               echo "run \`git log\` over the range yourself, append \`$EXCLUDE\` so those commits stay out."
             fi
             if [ -n "$RENAME_SHA" ]; then
-              echo "This range ships the rename from Clowd to Prisc (commit $RENAME_SHA)."
+              echo "This range ships the rename from Clowd to Flick (commit $RENAME_SHA)."
             fi
             echo
             cat "$RUNNER_TEMP/prompt-instructions.md"

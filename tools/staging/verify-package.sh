@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Checks an assembled package directory (the UI publish with the app's Rust
-# binaries beside Prisc.Ui and the recorder in recorder/) against the list in
+# binaries beside Flick.Ui and the recorder in recorder/) against the list in
 # shipped.sh, so a binary that silently fell out of one of the three builds
 # fails here instead of on a user's machine. Used by ci.yml's package job.
 #
@@ -24,19 +24,19 @@ ci=1
 [ "${3:-}" = --local ] && ci=0
 exe=$(rid_exe "$rid")
 
-expected=("Prisc.Ui$exe" "Prisc.VideoRender$exe")
+expected=("Flick.Ui$exe" "Flick.VideoRender$exe")
 while IFS= read -r f; do expected+=("$f"); done < <(app_binaries "$rid")
 while IFS= read -r f; do expected+=("recorder/$f"); done < <(recorder_binaries "$rid")
 expected+=(LICENSE.txt NOTICE.txt recorder/LICENSE.txt recorder/NOTICE.txt)
 if rid_has_ai "$rid"; then
-  expected+=(prisc_ai.NOTICE.txt)
+  expected+=(flick_ai.NOTICE.txt)
 fi
 case "$rid" in
   win-*)
     expected+=(recorder/obs.dll recorder/core recorder/data/libobs)
     if rid_has_ai "$rid"; then expected+=(DirectML.dll); fi
     if [ "$ci" = 1 ]; then
-      expected+=('PriscShellExt_*.dll' PriscShellExt.msix recorder/vcruntime140.dll)
+      expected+=('FlickShellExt_*.dll' FlickShellExt.msix recorder/vcruntime140.dll)
       if rid_has_ai "$rid"; then expected+=(vcruntime140.dll msvcp140.dll); fi
     fi
     ;;

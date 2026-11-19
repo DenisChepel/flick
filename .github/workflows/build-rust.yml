@@ -1,9 +1,9 @@
 name: Build rust
 
-# Reusable build of the Rust binaries that sit beside Prisc.Ui in every package:
+# Reusable build of the Rust binaries that sit beside Flick.Ui in every package:
 # the capture overlay, the scrolling capture driver,
-# the in-process interop library (prisc_interop) Prisc.Ui and Prisc.VideoRender
-# load, the prisc_ai inference binary (with its execution-provider dylibs and
+# the in-process interop library (flick_interop) Flick.Ui and Flick.VideoRender
+# load, the flick_ai inference binary (with its execution-provider dylibs and
 # the VC++ CRT it needs on Windows), and on Windows the shell extension dll and
 # its sparse MSIX. ci.yml calls it once; it runs alongside build-recorder.yml and
 # build-ui.yml, and ci.yml's package job merges the three.
@@ -16,7 +16,7 @@ on:
   workflow_call:
     inputs:
       version:
-        description: The nbgv version ci.yml's version job computed, stamped into the Sentry release name (crates/prisc_telemetry/src/lib.rs) and the MSIX manifest.
+        description: The nbgv version ci.yml's version job computed, stamped into the Sentry release name (crates/flick_telemetry/src/lib.rs) and the MSIX manifest.
         type: string
         required: true
     secrets:
@@ -34,7 +34,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # What each leg builds and ships (prisc_ai only where ONNX Runtime
+          # What each leg builds and ships (flick_ai only where ONNX Runtime
           # exists, the shell extension only on Windows) comes from
           # tools/staging/shipped.sh, the list build.sh uses too.
           # The app jobs (here, build-ui.yml, ci.yml's tests and release.yml)
@@ -61,8 +61,8 @@ jobs:
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
       # The Rust build has no nbgv hook, so the version ci.yml computed once is stamped into the
-      # Sentry release name (crates/prisc_telemetry/src/lib.rs) and the MSIX manifest.
-      PRISC_VERSION: ${{ inputs.version }}
+      # Sentry release name (crates/flick_telemetry/src/lib.rs) and the MSIX manifest.
+      FLICK_VERSION: ${{ inputs.version }}
       OUT: target/${{ matrix.target }}/release
     steps:
       - name: Checkout
@@ -81,7 +81,7 @@ jobs:
 
       # One invocation rather than one per crate, so codegen and the LTO links overlap instead of leaving the runner idle.
       # Explicit packages: the workspace also holds the recorder crates, which build-recorder.yml builds.
-      # The ort crate's build downloads pyke's prebuilt ONNX Runtime for the target and links prisc_ai statically.
+      # The ort crate's build downloads pyke's prebuilt ONNX Runtime for the target and links flick_ai statically.
       - name: Build rust binaries
         shell: bash
         run: |
@@ -89,7 +89,7 @@ jobs:
           cargo build --release --target ${{ matrix.target }} $(tools/staging/stage-app.sh packages ${{ matrix.rid }})
 
       # The in-process library gets a cargo invocation of its own: built beside the packages above,
-      # cargo would unify features across them and hand it prisc_capture's (all of AppKit, for one).
+      # cargo would unify features across them and hand it flick_capture's (all of AppKit, for one).
       # Fails on cargo's "`default-features` is ignored for X" warning (cargo wraps
       # the key in backticks), which means a dependency line silently enables more than it asks for,
       # and on ld64's "duplicate symbol" warning.
@@ -108,7 +108,7 @@ jobs:
             exit 1
           fi
 
-      # The artifact check behind the isolated build: exports only prisc_*, no Sentry symbol, only OS
+      # The artifact check behind the isolated build: exports only flick_*, no Sentry symbol, only OS
       # libraries as dependencies (and the @rpath install name on macOS).
       - name: Verify isolated rust libraries
         shell: bash
@@ -125,8 +125,8 @@ jobs:
             sentry-cli debug-files upload "$dif" "$bin"
           done
 
-      # stage/ unpacks into the package directory beside Prisc.Ui: the overlay, the scrolling
-      # capture driver, the interop library, LICENSE/NOTICE and prisc_ai with its
+      # stage/ unpacks into the package directory beside Flick.Ui: the overlay, the scrolling
+      # capture driver, the interop library, LICENSE/NOTICE and flick_ai with its
       # model NOTICE, DirectML.dll and (Windows) the VC++ runtime it alone imports. release.yml signs them with the rest: vpk's
       # Trusted Signing pass covers every dll in the pack dir, and the macOS app signing and
       # notarization cover every Mach-O in the bundle.
@@ -138,9 +138,9 @@ jobs:
       - name: Stage shell extension (Windows)
         if: runner.os == 'Windows'
         run: |
-          EXT_VERSION=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[] | select(.name == "prisc_shell_ext") | .version')
-          echo "PRISC_EXT_VERSION=$EXT_VERSION" >> "$GITHUB_ENV"
-          cp "$OUT/prisc_shell_ext.dll" "stage/PriscShellExt_${EXT_VERSION}.dll"
+          EXT_VERSION=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[] | select(.name == "flick_shell_ext") | .version')
+          echo "FLICK_EXT_VERSION=$EXT_VERSION" >> "$GITHUB_ENV"
+          cp "$OUT/flick_shell_ext.dll" "stage/FlickShellExt_${EXT_VERSION}.dll"
         shell: bash
 
       # Sparse package: the msix holds only the manifest + logos and /nv skips the payload validation that would reject its references to the external dll.
@@ -149,12 +149,12 @@ jobs:
         run: |
           $staging = Join-Path $env:RUNNER_TEMP msix-staging
           New-Item -ItemType Directory -Path $staging | Out-Null
-          Copy-Item -Recurse crates/prisc_shell_ext/msix/Assets (Join-Path $staging Assets)
-          $manifest = (Get-Content crates/prisc_shell_ext/msix/AppxManifest.template.xml -Raw)
-          $manifest = $manifest.Replace('{{VERSION}}', "$env:PRISC_VERSION.0").Replace('{{ARCH}}', '${{ matrix.msix-arch }}').Replace('{{EXTVERSION}}', $env:PRISC_EXT_VERSION)
+          Copy-Item -Recurse crates/flick_shell_ext/msix/Assets (Join-Path $staging Assets)
+          $manifest = (Get-Content crates/flick_shell_ext/msix/AppxManifest.template.xml -Raw)
+          $manifest = $manifest.Replace('{{VERSION}}', "$env:FLICK_VERSION.0").Replace('{{ARCH}}', '${{ matrix.msix-arch }}').Replace('{{EXTVERSION}}', $env:FLICK_EXT_VERSION)
           Set-Content -Path (Join-Path $staging AppxManifest.xml) -Value $manifest -Encoding utf8
           $makeappx = Get-ChildItem 'C:\Program Files (x86)\Windows Kits\10\bin\*\x64\makeappx.exe' | Select-Object -Last 1
-          & $makeappx.FullName pack /d $staging /p stage/PriscShellExt.msix /nv /o
+          & $makeappx.FullName pack /d $staging /p stage/FlickShellExt.msix /nv /o
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
         shell: pwsh
 

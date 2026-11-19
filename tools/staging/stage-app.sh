@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# The app's Rust half (everything beside Prisc.Ui except the recorder/ folder),
+# The app's Rust half (everything beside Flick.Ui except the recorder/ folder),
 # driven by the list in shipped.sh. Used by build.sh and build-rust.yml.
 #
 #   stage-app.sh packages <rid>
@@ -8,7 +8,7 @@
 #       one line of `-p` arguments per package that needs a cargo
 #       invocation of its own (shipped.sh: app_packages_isolated)
 #   stage-app.sh verify-isolated <rid> <cargo profile dir>
-#       check the built isolated libraries: exports only prisc_*, no Sentry
+#       check the built isolated libraries: exports only flick_*, no Sentry
 #       linked in, only OS libraries as dependencies
 #   stage-app.sh stage <rid> <cargo profile dir> <dest>
 #       copy the binaries, their runtime companions and licenses into <dest>
@@ -57,12 +57,12 @@ case "$mode" in
       echo "==> $lib"
       case "$rid" in
         osx-*)
-          # Exports: every global defined symbol is a prisc_ export (C names carry a leading _).
+          # Exports: every global defined symbol is a flick_ export (C names carry a leading _).
           exports=$(nm -gU "$lib" | awk 'NF { print $NF }')
-          [ -n "$(echo "$exports" | grep '^_prisc_' || true)" ] || fail "$lib exports no _prisc_ symbol"
-          foreign=$(echo "$exports" | grep -v '^_prisc_' || true)
-          [ -z "$foreign" ] || fail "$lib exports symbols other than _prisc_*: $(echo "$foreign" | tr '\n' ' ')"
-          # Sentry must never be linked in-process (crates/prisc_interop/README.md, rule D3).
+          [ -n "$(echo "$exports" | grep '^_flick_' || true)" ] || fail "$lib exports no _flick_ symbol"
+          foreign=$(echo "$exports" | grep -v '^_flick_' || true)
+          [ -z "$foreign" ] || fail "$lib exports symbols other than _flick_*: $(echo "$foreign" | tr '\n' ' ')"
+          # Sentry must never be linked in-process (crates/flick_interop/README.md, rule D3).
           sentry=$(nm -a "$lib" | grep -ci sentry || true)
           [ "$sentry" -eq 0 ] || fail "$lib links Sentry ($sentry symbols); was it built together with another package?"
           # The install name keeps CI paths out of the dylib; dependencies are OS libraries only.
@@ -71,7 +71,7 @@ case "$mode" in
           deps=$(otool -L "$lib" | sed '1d' | awk '{ print $1 }' | grep -v -x -F "$id" || true)
           other=$(echo "$deps" | grep -v -E '^(/usr/lib/|/System/Library/)' | sed '/^$/d' || true)
           [ -z "$other" ] || fail "$lib depends on non-OS libraries: $(echo "$other" | tr '\n' ' ')"
-          echo "exports: $(echo "$exports" | grep -c '^_prisc_') prisc_ symbols; dependencies: $(echo "$deps" | sed "/^$/d" | wc -l | tr -d " ")"
+          echo "exports: $(echo "$exports" | grep -c '^_flick_') flick_ symbols; dependencies: $(echo "$deps" | sed "/^$/d" | wc -l | tr -d " ")"
           ;;
         win-*)
           dumpbin=${DUMPBIN:-}
@@ -81,12 +81,12 @@ case "$mode" in
             [ -n "$found" ] || { echo "::error::dumpbin.exe not found through vswhere" >&2; exit 1; }
             dumpbin=$(cygpath -u "$found")
           fi
-          # Exports: the export table names prisc_ functions only.
+          # Exports: the export table names flick_ functions only.
           exports=$("$dumpbin" -nologo -exports "$lib" | tr -d '\r' |
             awk '$1 ~ /^[0-9]+$/ && $2 ~ /^[0-9A-Fa-f]+$/ && length($3) >= 8 && $3 ~ /^[0-9A-Fa-f]+$/ { print $4 }')
-          [ -n "$(echo "$exports" | grep '^prisc_' || true)" ] || fail "$lib exports no prisc_ function"
-          foreign=$(echo "$exports" | grep -v '^prisc_' | sed '/^$/d' || true)
-          [ -z "$foreign" ] || fail "$lib exports functions other than prisc_*: $(echo "$foreign" | tr '\n' ' ')"
+          [ -n "$(echo "$exports" | grep '^flick_' || true)" ] || fail "$lib exports no flick_ function"
+          foreign=$(echo "$exports" | grep -v '^flick_' | sed '/^$/d' || true)
+          [ -z "$foreign" ] || fail "$lib exports functions other than flick_*: $(echo "$foreign" | tr '\n' ' ')"
           # Dependencies (direct and delay-loaded) are OS DLLs only: present in System32 or an
           # API set the loader resolves, and never the CRT, which crt-static links in.
           deps=$("$dumpbin" -nologo -dependents "$lib" | tr -d '\r' | awk '$0 ~ /^ +[^ ]+\.[dD][lL][lL] *$/ { print $1 }')
@@ -100,7 +100,7 @@ case "$mode" in
               *) [ -f "$sys32/$dep" ] || fail "$lib depends on $dep, which is not a System32 DLL" ;;
             esac
           done
-          # Sentry must never be linked in-process (crates/prisc_interop/README.md, rule D3). A PE
+          # Sentry must never be linked in-process (crates/flick_interop/README.md, rule D3). A PE
           # image keeps no symbol names; its pdb names every linked function, like nm -a on macOS.
           pdb="${lib%.*}.pdb"
           if [ -f "$pdb" ]; then
@@ -109,7 +109,7 @@ case "$mode" in
           else
             fail "$pdb is missing, so the Sentry check cannot run"
           fi
-          echo "exports: $(echo "$exports" | grep -c '^prisc_') prisc_ functions; dependencies: $(echo "$deps" | tr '\n' ' ')"
+          echo "exports: $(echo "$exports" | grep -c '^flick_') flick_ functions; dependencies: $(echo "$deps" | tr '\n' ' ')"
           ;;
       esac
     done
@@ -127,16 +127,16 @@ case "$mode" in
     cp "$root/LICENSE" "$dest/LICENSE.txt"
     cp "$root/NOTICE" "$dest/NOTICE.txt"
     if rid_has_ai "$rid"; then
-      # Attributions and licenses of the model weights prisc_ai embeds.
-      cp "$root/crates/prisc_ai/NOTICE.txt" "$dest/prisc_ai.NOTICE.txt"
+      # Attributions and licenses of the model weights flick_ai embeds.
+      cp "$root/crates/flick_ai/NOTICE.txt" "$dest/flick_ai.NOTICE.txt"
       case "$rid" in
         win-*)
           # ONNX Runtime is statically linked, but the DirectML EP needs its
           # helper dll beside the exe (ort's copy-dylibs staged it into the
           # profile dir). The macOS CoreML EP is fully static.
           cp "$src/DirectML.dll" "$dest/"
-          # prisc_ai is the app's one /MD binary; every other binary beside
-          # Prisc.Ui is crt-static (the recorder/ folder carries its own copy).
+          # flick_ai is the app's one /MD binary; every other binary beside
+          # Flick.Ui is crt-static (the recorder/ folder carries its own copy).
           copy_vc_runtime "$rid" "$dest"
           ;;
       esac

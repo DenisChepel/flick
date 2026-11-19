@@ -4,14 +4,14 @@
 # generated JSON would show up as a line-ending-only diff every week.
 tools/gen-credits.sh                     text eol=lf
 .github/workflows/update-credits.yml     text eol=lf
-ui/Prisc.Ui/Assets/credits.json          text eol=lf
+ui/Flick.Ui/Assets/credits.json          text eol=lf
 
 # Shell scripts run on Linux and macOS runners, and tools/linux-build/*.sh are
 # bind-mounted into the Linux build image, so a CRLF checkout (core.autocrlf=true
 # on a Windows dev box) would break their shebangs.
 *.sh    text eol=lf
 
-# Every generated C# file (crates/prisc_codegen, `cargo codegen`), which always writes LF. Pinned so
+# Every generated C# file (crates/flick_codegen, `cargo codegen`), which always writes LF. Pinned so
 # that a regen on a CRLF checkout does not show up as a line-ending-only diff.
 *.g.cs  text eol=lf
 
@@ -25,6 +25,6 @@ ui/Prisc.Ui/Assets/credits.json          text eol=lf
 *.gif   binary
 *.ttf   binary
 *.onnx  binary
-# prisc_vid2gif test fixtures (crates/prisc_vid2gif/tests/fixtures/clip.{mp4,mkv}).
+# flick_vid2gif test fixtures (crates/flick_vid2gif/tests/fixtures/clip.{mp4,mkv}).
 *.mp4   binary
 *.mkv   binary

@@ -1,11 +1,11 @@
 name: CI
 
 # Test + package on every commit.
-# Each package is the published Prisc.Ui app (build-ui.yml) with the Rust binaries
-# beside it (build-rust.yml) and the recorder (prisc_recorder + libobs,
+# Each package is the published Flick.Ui app (build-ui.yml) with the Rust binaries
+# beside it (build-rust.yml) and the recorder (flick_recorder + libobs,
 # build-recorder.yml) in a recorder/ subdirectory, the layout
 # ScreenCaptureService/HelperLocator expects. Every package except osx-x64 (which
-# upstream ONNX Runtime no longer supports) also carries the prisc_ai inference binary
+# upstream ONNX Runtime no longer supports) also carries the flick_ai inference binary
 # (OCR, matting, denoising) with its execution-provider dylibs.
 #
 # The three builds run in parallel and package only merges their outputs, so the app
@@ -21,7 +21,7 @@ name: CI
 #                                              dotnet tests, interop probe (no needs)
 #   test-video      needs recorder             runs even if it fails; the FFmpeg tests then skip;
 #                                              GPU on WARP (Windows) against tools/warp-baseline.txt
-#   package         needs recorder, rust, ui   -> prisc-<rid>
+#   package         needs recorder, rust, ui   -> flick-<rid>
 
 on:
   push:
@@ -95,7 +95,7 @@ jobs:
         # macos-15, not the recorder's macos-26: see build-rust.yml.
         os: [windows-latest, macos-15]
     runs-on: ${{ matrix.os }}
-    # Three more Rust crates, the Prisc.Ui Release build and the probe run on top of the previous 60.
+    # Three more Rust crates, the Flick.Ui Release build and the probe run on top of the previous 60.
     timeout-minutes: 90
     steps:
       - name: Checkout
@@ -104,7 +104,7 @@ jobs:
           # nbgv needs full history to compute the version height.
           fetch-depth: 0
 
-      # C# reaches natives only through ui/Prisc.Interop (generated from crates/prisc_interop);
+      # C# reaches natives only through ui/Flick.Interop (generated from crates/flick_interop);
       # every other site is a line in tools/native-interop-allowlist. Cheap, so it runs first.
       - name: Native interop check
         run: tools/check-native-interop.sh
@@ -133,73 +133,73 @@ jobs:
       - name: "Rust gate: format + lint + tests"
         run: |
           cargo fmt --check
-          cargo clippy -p prisc_ipc --all-targets -- -D warnings
-          cargo test -p prisc_ipc
-          cargo clippy -p prisc_shared --all-targets -- -D warnings
-          cargo test -p prisc_shared
-          cargo clippy -p prisc_desktop --all-targets -- -D warnings
-          cargo test -p prisc_desktop
-          cargo clippy -p prisc_telemetry --all-targets -- -D warnings
-          cargo test -p prisc_telemetry
-          cargo clippy -p prisc_hotkeys --all-targets -- -D warnings
-          cargo test -p prisc_hotkeys
-          # prisc_capture has always been gated without --all-targets; widening that is a change of its own.
-          cargo clippy -p prisc_capture -- -D warnings
-          cargo test -p prisc_capture
-          cargo clippy -p prisc_scroll_driver --all-targets -- -D warnings
-          cargo test -p prisc_scroll_driver
-          cargo clippy -p prisc_ai --all-targets -- -D warnings
-          cargo test -p prisc_ai
-          cargo clippy -p prisc_platform --all-targets -- -D warnings
-          cargo test -p prisc_platform
-          cargo clippy -p prisc_interop --all-targets -- -D warnings
+          cargo clippy -p flick_ipc --all-targets -- -D warnings
+          cargo test -p flick_ipc
+          cargo clippy -p flick_shared --all-targets -- -D warnings
+          cargo test -p flick_shared
+          cargo clippy -p flick_desktop --all-targets -- -D warnings
+          cargo test -p flick_desktop
+          cargo clippy -p flick_telemetry --all-targets -- -D warnings
+          cargo test -p flick_telemetry
+          cargo clippy -p flick_hotkeys --all-targets -- -D warnings
+          cargo test -p flick_hotkeys
+          # flick_capture has always been gated without --all-targets; widening that is a change of its own.
+          cargo clippy -p flick_capture -- -D warnings
+          cargo test -p flick_capture
+          cargo clippy -p flick_scroll_driver --all-targets -- -D warnings
+          cargo test -p flick_scroll_driver
+          cargo clippy -p flick_ai --all-targets -- -D warnings
+          cargo test -p flick_ai
+          cargo clippy -p flick_platform --all-targets -- -D warnings
+          cargo test -p flick_platform
+          cargo clippy -p flick_interop --all-targets -- -D warnings
           # Includes the harness = false main_thread_* targets, which run on the real main thread on macOS.
-          cargo test -p prisc_interop
-          cargo clippy -p prisc_codegen --all-targets -- -D warnings
-          # Fails on a stale, missing or orphaned generated file and on any prisc_interop crate rule.
-          cargo test -p prisc_codegen
+          cargo test -p flick_interop
+          cargo clippy -p flick_codegen --all-targets -- -D warnings
+          # Fails on a stale, missing or orphaned generated file and on any flick_interop crate rule.
+          cargo test -p flick_codegen
         shell: bash
 
-      # The in-process library and the code generator must never link Sentry (prisc_interop only),
-      # prisc_ai or anything from the recorder stack: those run as their own processes. The cheap early signal; build-rust.yml checks
+      # The in-process library and the code generator must never link Sentry (flick_interop only),
+      # flick_ai or anything from the recorder stack: those run as their own processes. The cheap early signal; build-rust.yml checks
       # the shipped artifact itself.
       - name: "Rust gate: crate boundaries"
         run: |
-          separate='prisc_recorder|prisc_share_region|prisc_obs[a-z0-9_]*|prisc_vid2gif|prisc_ffmpeg_sys|prisc_build_support|prisc_ai'
+          separate='flick_recorder|flick_share_region|flick_obs[a-z0-9_]*|flick_vid2gif|flick_ffmpeg_sys|flick_build_support|flick_ai'
           # Captured first: inside an `if` condition a failing cargo tree would just read as "no match".
-          interop_tree=$(cargo tree -p prisc_interop -e normal --target all --prefix none)
-          codegen_tree=$(cargo tree -p prisc_codegen -e normal --target all --prefix none)
+          interop_tree=$(cargo tree -p flick_interop -e normal --target all --prefix none)
+          codegen_tree=$(cargo tree -p flick_codegen -e normal --target all --prefix none)
           if grep -wE "sentry|$separate" <<<"$interop_tree"; then
-            echo "::error::prisc_interop depends on Sentry, prisc_ai or a recorder-stack crate (listed above)"
+            echo "::error::flick_interop depends on Sentry, flick_ai or a recorder-stack crate (listed above)"
             exit 1
           fi
           if grep -wE "$separate" <<<"$codegen_tree"; then
-            echo "::error::prisc_codegen depends on prisc_ai or a recorder-stack crate (listed above)"
+            echo "::error::flick_codegen depends on flick_ai or a recorder-stack crate (listed above)"
             exit 1
           fi
         shell: bash
 
-      # prisc_hotkeys has no Linux backend yet, but Key/Gesture still build there, and this job
-      # has no Linux leg. prisc_platform and prisc_interop prove every unsupported arm compiles;
-      # prisc_shared and prisc_desktop are what the Linux recorder stack depends on
+      # flick_hotkeys has no Linux backend yet, but Key/Gesture still build there, and this job
+      # has no Linux leg. flick_platform and flick_interop prove every unsupported arm compiles;
+      # flick_shared and flick_desktop are what the Linux recorder stack depends on
       # unconditionally. Plain Rust on Linux, so clippy needs no linker. One call per crate.
       - name: "Rust gate: Linux cross-check"
         if: runner.os == 'Windows'
         run: |
           rustup target add x86_64-unknown-linux-gnu
-          cargo clippy -p prisc_hotkeys --target x86_64-unknown-linux-gnu -- -D warnings
-          cargo clippy -p prisc_platform --target x86_64-unknown-linux-gnu -- -D warnings
-          cargo clippy -p prisc_interop --target x86_64-unknown-linux-gnu -- -D warnings
-          cargo clippy -p prisc_shared --target x86_64-unknown-linux-gnu -- -D warnings
-          cargo clippy -p prisc_desktop --target x86_64-unknown-linux-gnu -- -D warnings
+          cargo clippy -p flick_hotkeys --target x86_64-unknown-linux-gnu -- -D warnings
+          cargo clippy -p flick_platform --target x86_64-unknown-linux-gnu -- -D warnings
+          cargo clippy -p flick_interop --target x86_64-unknown-linux-gnu -- -D warnings
+          cargo clippy -p flick_shared --target x86_64-unknown-linux-gnu -- -D warnings
+          cargo clippy -p flick_desktop --target x86_64-unknown-linux-gnu -- -D warnings
         shell: bash
 
       # The shell extension is a Windows COM dll and an empty crate elsewhere.
       - name: "Rust gate: shell extension (Windows)"
         if: runner.os == 'Windows'
         run: |
-          cargo clippy -p prisc_shell_ext -- -D warnings
-          cargo test -p prisc_shell_ext
+          cargo clippy -p flick_shell_ext -- -D warnings
+          cargo test -p flick_shell_ext
         shell: bash
 
       # The library the dotnet tests load: the loader finds target/debug by walking up from the
@@ -207,34 +207,34 @@ jobs:
       # line silently enabling more than it asks for; cargo wraps the key in backticks) and on
       # ld64's "duplicate symbol" warning (a dependency's #[no_mangle] colliding with an export;
       # ld64 keeps one and only warns). On macOS it also fails on any exported symbol other than
-      # _prisc_* (an #[export_name] static, such as objc2's define_class! emits), the same check
+      # _flick_* (an #[export_name] static, such as objc2's define_class! emits), the same check
       # stage-app.sh makes on the release artifact, so it shows up here first.
-      - name: Build prisc_interop (debug)
+      - name: Build flick_interop (debug)
         run: |
-          cargo build -p prisc_interop 2>&1 | tee "$RUNNER_TEMP/interop-build.log"
+          cargo build -p flick_interop 2>&1 | tee "$RUNNER_TEMP/interop-build.log"
           if grep -E ".?default-features.? is ignored|duplicate symbol" "$RUNNER_TEMP/interop-build.log"; then
-            echo "::error::the prisc_interop build printed a default-features or duplicate symbol warning"
+            echo "::error::the flick_interop build printed a default-features or duplicate symbol warning"
             exit 1
           fi
           if [ "$RUNNER_OS" = macOS ]; then
-            foreign=$(nm -gU target/debug/libprisc_interop.dylib | awk 'NF { print $NF }' | grep -v '^_prisc_' || true)
+            foreign=$(nm -gU target/debug/libflick_interop.dylib | awk 'NF { print $NF }' | grep -v '^_flick_' || true)
             if [ -n "$foreign" ]; then
-              echo "::error::libprisc_interop.dylib exports symbols other than _prisc_*: $(echo "$foreign" | tr '\n' ' ')"
+              echo "::error::libflick_interop.dylib exports symbols other than _flick_*: $(echo "$foreign" | tr '\n' ' ')"
               exit 1
             fi
           fi
         shell: bash
 
-      # Prisc.VideoSDK.Tests runs in test-video, which waits for this run's recorder payload.
-      # PRISC_INTEROP_REQUIRED turns a missing or stale library into a failure instead of a skip.
+      # Flick.VideoSDK.Tests runs in test-video, which waits for this run's recorder payload.
+      # FLICK_INTEROP_REQUIRED turns a missing or stale library into a failure instead of a skip.
       - name: "UI gate: dotnet tests"
         env:
-          PRISC_INTEROP_REQUIRED: "1"
+          FLICK_INTEROP_REQUIRED: "1"
         run: |
-          dotnet test ui/Prisc.Interop.Tests/Prisc.Interop.Tests.csproj -c Release --nologo
-          dotnet test ui/Prisc.Shared.Tests/Prisc.Shared.Tests.csproj -c Release --nologo
-          dotnet test ui/Prisc.Drawing.Tests/Prisc.Drawing.Tests.csproj -c Release --nologo
-          dotnet test ui/Prisc.Ipc.Tests/Prisc.Ipc.Tests.csproj -c Release --nologo
+          dotnet test ui/Flick.Interop.Tests/Flick.Interop.Tests.csproj -c Release --nologo
+          dotnet test ui/Flick.Shared.Tests/Flick.Shared.Tests.csproj -c Release --nologo
+          dotnet test ui/Flick.Drawing.Tests/Flick.Drawing.Tests.csproj -c Release --nologo
+          dotnet test ui/Flick.Ipc.Tests/Flick.Ipc.Tests.csproj -c Release --nologo
         shell: bash
 
       # Runs every kept C# facade and every wrapper once in the real app (a small real window on the
@@ -248,18 +248,18 @@ jobs:
         if: ${{ !cancelled() }}
         timeout-minutes: 15
         env:
-          PRISC_INTEROP_REQUIRED: "1"
-          PRISC_DISABLE_TELEMETRY: "1"
+          FLICK_INTEROP_REQUIRED: "1"
+          FLICK_DISABLE_TELEMETRY: "1"
         run: |
           # Built here too (a no-op after the step above), so a failure in an earlier gate step
           # still leaves the probe a library to load instead of a cascade of "not available".
-          cargo build -p prisc_interop
-          dotnet build ui/Prisc.Ui/Prisc.Ui.csproj -c Release --nologo
+          cargo build -p flick_interop
+          dotnet build ui/Flick.Ui/Flick.Ui.csproj -c Release --nologo
           mkdir -p probe-out
           # The app takes a native path; the file checks below use the shell's.
           if [ "$RUNNER_OS" = Windows ]; then probe="$(pwd -W)/probe-out/probe.json"; else probe="$PWD/probe-out/probe.json"; fi
           status=0
-          "ui/Prisc.Ui/bin/Release/net10.0/Prisc.Ui${{ runner.os == 'Windows' && '.exe' || '' }}" --interop-probe "$probe" || status=$?
+          "ui/Flick.Ui/bin/Release/net10.0/Flick.Ui${{ runner.os == 'Windows' && '.exe' || '' }}" --interop-probe "$probe" || status=$?
           if [ ! -s probe-out/probe.json ]; then
             echo "::error::the interop probe wrote no results (exit code $status)"
             exit 1
@@ -279,9 +279,9 @@ jobs:
           path: probe-out/probe.json
           if-no-files-found: warn
 
-  # Prisc.VideoSDK.Tests is the video editor's suite — the playback engine, the compositor,
+  # Flick.VideoSDK.Tests is the video editor's suite — the playback engine, the compositor,
   # the render/encode path, the audio clock and the editor model. Tests that need something the
-  # runner has not got (FFmpeg, the prisc_ai binary, another platform) skip rather than fail.
+  # runner has not got (FFmpeg, the flick_ai binary, another platform) skip rather than fail.
   test-video:
     name: test-video (${{ matrix.os }})
     needs: [recorder]
@@ -322,26 +322,26 @@ jobs:
         uses: Swatinem/rust-cache@v2
 
       # The interop library is built here (debug, seconds warm) rather than taken from the rust job,
-      # so this job does not wait for the release builds and their Sentry upload. PRISC_INTEROP_PATH
-      # is authoritative and inherited by the Prisc.VideoRender children the render tests spawn;
-      # PRISC_INTEROP_REQUIRED turns a missing or stale library into a failure instead of a skip.
+      # so this job does not wait for the release builds and their Sentry upload. FLICK_INTEROP_PATH
+      # is authoritative and inherited by the Flick.VideoRender children the render tests spawn;
+      # FLICK_INTEROP_REQUIRED turns a missing or stale library into a failure instead of a skip.
       # WARP stays off in the main suite: its GPU tests skip without hardware; only the filtered
       # WARP step below admits the software adapter.
-      - name: Build prisc_interop (debug)
+      - name: Build flick_interop (debug)
         run: |
-          cargo build -p prisc_interop
-          lib="$PWD/target/debug/$(. tools/staging/shipped.sh && rid_cdylib ${{ matrix.rid }} prisc_interop)"
+          cargo build -p flick_interop
+          lib="$PWD/target/debug/$(. tools/staging/shipped.sh && rid_cdylib ${{ matrix.rid }} flick_interop)"
           [ -f "$lib" ] || { echo "::error::$lib was not built"; exit 1; }
           if [ "$RUNNER_OS" = Windows ]; then lib=$(cygpath -w "$lib"); fi
-          echo "PRISC_INTEROP_PATH=$lib" >> "$GITHUB_ENV"
-          echo "PRISC_INTEROP_REQUIRED=1" >> "$GITHUB_ENV"
+          echo "FLICK_INTEROP_PATH=$lib" >> "$GITHUB_ENV"
+          echo "FLICK_INTEROP_REQUIRED=1" >> "$GITHUB_ENV"
         shell: bash
 
       # The video editor's suite needs FFmpeg 8.1 natives to run its decode/encode/render tests;
       # without them ~100 of them skip. Take them from the recorder payload this run built, the
       # same one a shipped build carries, so what CI exercises is what users get, including
-      # HelperLocator's own resolution of it: this points PRISC_HELPERS_DIR at the directory
-      # holding recorder/, exactly the release layout, rather than PRISC_FFMPEG_PATH at a library
+      # HelperLocator's own resolution of it: this points FLICK_HELPERS_DIR at the directory
+      # holding recorder/, exactly the release layout, rather than FLICK_FFMPEG_PATH at a library
       # directory, because the layout differs per platform (beside the exe on Windows, Frameworks/
       # on macOS) and working that out is the thing under test.
       #
@@ -361,20 +361,20 @@ jobs:
             mkdir -p recorder
             unzip -q "$zip" -d recorder
           fi
-          exe="recorder/prisc_recorder${{ matrix.exe }}"
+          exe="recorder/flick_recorder${{ matrix.exe }}"
           if [ -f "$exe" ]; then
-            echo "PRISC_HELPERS_DIR=$(pwd)" >> "$GITHUB_ENV"
+            echo "FLICK_HELPERS_DIR=$(pwd)" >> "$GITHUB_ENV"
           else
             echo "::warning::recorder payload unavailable; the FFmpeg-backed tests will skip"
           fi
         shell: bash
 
       - name: "UI gate: video editor tests"
-        run: dotnet test ui/Prisc.VideoSDK.Tests/Prisc.VideoSDK.Tests.csproj -c Release --nologo
+        run: dotnet test ui/Flick.VideoSDK.Tests/Flick.VideoSDK.Tests.csproj -c Release --nologo
         shell: bash
 
       # The runner has no GPU, so the D3D12 paths only run on WARP, the software adapter, which
-      # PRISC_GPU_ALLOW_WARP admits for this step alone. Only these filtered tests run on it (never
+      # FLICK_GPU_ALLOW_WARP admits for this step alone. Only these filtered tests run on it (never
       # the whole suite): WARP is slow and lacks features, and NV12 answering E_CAPABILITY there is
       # a skip with a printed reason, never a pass. Here rather than in the test job because the
       # D3D11EncodeBridge rigs need the FFmpeg payload above, and they would all skip without it.
@@ -385,14 +385,14 @@ jobs:
       - name: GPU on WARP (Windows)
         if: ${{ !cancelled() && runner.os == 'Windows' }}
         env:
-          PRISC_GPU_ALLOW_WARP: "1"
+          FLICK_GPU_ALLOW_WARP: "1"
         run: |
-          if [ -z "${PRISC_HELPERS_DIR:-}" ]; then
+          if [ -z "${FLICK_HELPERS_DIR:-}" ]; then
             echo "::warning::no recorder payload, so the D3D11EncodeBridge tests skip; this run cannot record or meet the WARP baseline for them"
           fi
           rm -rf warp-results
           status=0
-          dotnet test ui/Prisc.VideoSDK.Tests/Prisc.VideoSDK.Tests.csproj -c Release --nologo \
+          dotnet test ui/Flick.VideoSDK.Tests/Flick.VideoSDK.Tests.csproj -c Release --nologo \
             --filter "FullyQualifiedName~GpuInterop|FullyQualifiedName~ReadbackRing|FullyQualifiedName~D3D11EncodeBridge" \
             --logger "trx;LogFileName=warp.trx" --results-directory warp-results || status=$?
           echo "dotnet test exited $status; the baseline check below decides"
@@ -417,33 +417,33 @@ jobs:
       - name: Rust ring harness on WARP (Windows)
         if: ${{ !cancelled() && runner.os == 'Windows' }}
         env:
-          PRISC_GPU_ALLOW_WARP: "1"
+          FLICK_GPU_ALLOW_WARP: "1"
         run: |
-          cargo test -p prisc_interop --test ring_harness
-          cargo test -p prisc_interop --lib platform::windows::gpu -- --show-output 2>&1 | tee gpu-unit.log
+          cargo test -p flick_interop --test ring_harness
+          cargo test -p flick_interop --lib platform::windows::gpu -- --show-output 2>&1 | tee gpu-unit.log
           grep -h "^skipping " gpu-unit.log | sort -u | sed 's/^/::notice title=Skipped on WARP::/' || true
         shell: bash
 
-      # The FFmpeg dylib closure prisc_interop loads ahead of FFmpeg.AutoGen, against the real
+      # The FFmpeg dylib closure flick_interop loads ahead of FFmpeg.AutoGen, against the real
       # payload: the closure test and the Mach-O reader's otool parity over every shipped dylib.
       # The test job runs them too, but without a payload, so there they only cover fixtures.
       - name: FFmpeg closure over the payload (macOS)
         if: ${{ !cancelled() && runner.os == 'macOS' }}
         run: |
-          if [ -z "${PRISC_HELPERS_DIR:-}" ]; then
+          if [ -z "${FLICK_HELPERS_DIR:-}" ]; then
             echo "::warning::no recorder payload, so the FFmpeg closure tests cannot run against it"
             exit 0
           fi
-          cargo test -p prisc_interop --test ipc_process preparing_the_payload -- --nocapture 2>&1 | tee closure.log
+          cargo test -p flick_interop --test ipc_process preparing_the_payload -- --nocapture 2>&1 | tee closure.log
           if grep -q "skipping:" closure.log; then
-            echo "::error::the payload closure test skipped although PRISC_HELPERS_DIR is set"
+            echo "::error::the payload closure test skipped although FLICK_HELPERS_DIR is set"
             exit 1
           fi
-          cargo test -p prisc_interop --lib platform::macos::dylib
+          cargo test -p flick_interop --lib platform::macos::dylib
         shell: bash
 
   # Merges the three builds for one rid: the UI publish is the package directory, the Rust
-  # binaries go beside Prisc.Ui, and the recorder goes in recorder/. Pure file shuffling, so it
+  # binaries go beside Flick.Ui, and the recorder goes in recorder/. Pure file shuffling, so it
   # runs on Linux for every rid; Info-ZIP's unzip and zip there keep the macOS execute bits
   # and the recorder's framework symlinks, as they did on the macOS runner.
   package:
@@ -500,23 +500,23 @@ jobs:
         if: startsWith(matrix.rid, 'osx-')
         run: |
           set -euo pipefail
-          zip="prisc-${{ matrix.rid }}.zip"
+          zip="flick-${{ matrix.rid }}.zip"
           (cd publish && zip -qry "../$zip" .)
-          zipinfo "$zip" | grep -E ' Prisc\.Ui$' | grep -q '^-rwx' || { echo "::error::package lost the execute bit"; exit 1; }
+          zipinfo "$zip" | grep -E ' Flick\.Ui$' | grep -q '^-rwx' || { echo "::error::package lost the execute bit"; exit 1; }
           [ "$(zipinfo "$zip" | grep -c '^l')" -gt 0 ] || { echo "::error::package lost the recorder's symlinks"; exit 1; }
 
       - name: Upload package (macOS)
         if: startsWith(matrix.rid, 'osx-')
         uses: actions/upload-artifact@v7
         with:
-          name: prisc-${{ matrix.rid }}
-          path: prisc-${{ matrix.rid }}.zip
+          name: flick-${{ matrix.rid }}
+          path: flick-${{ matrix.rid }}.zip
           if-no-files-found: error
 
       - name: Upload package (Windows)
         if: startsWith(matrix.rid, 'win-')
         uses: actions/upload-artifact@v7
         with:
-          name: prisc-${{ matrix.rid }}
+          name: flick-${{ matrix.rid }}
           path: publish/
           if-no-files-found: error

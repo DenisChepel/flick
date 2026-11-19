@@ -3,7 +3,7 @@
 #
 # Usage: ./tools/gen-credits.sh
 #
-# Produces ui/Prisc.Ui/Assets/credits.json (embedded as an Avalonia
+# Produces ui/Flick.Ui/Assets/credits.json (embedded as an Avalonia
 # resource and rendered by AboutPage). Re-run this whenever dependencies
 # change — the output is deterministic (sorted, deduplicated) so diffs stay
 # clean and only reflect real dependency changes.
@@ -24,16 +24,16 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-OUT="$ROOT/ui/Prisc.Ui/Assets/credits.json"
+OUT="$ROOT/ui/Flick.Ui/Assets/credits.json"
 JQ="${JQ:-jq}"
 
-# .NET projects that ship inside the Prisc.Ui executable. Test/benchmark/tool
+# .NET projects that ship inside the Flick.Ui executable. Test/benchmark/tool
 # projects are intentionally excluded — their packages are not distributed.
 SHIPPED_CSPROJ=(
-    "ui/Prisc.Ui/Prisc.Ui.csproj"
-    "ui/Prisc.Shared/Prisc.Shared.csproj"
-    "ui/Prisc.Upload/Prisc.Upload.csproj"
-    "ui/Prisc.Drawing/Prisc.Drawing.csproj"
+    "ui/Flick.Ui/Flick.Ui.csproj"
+    "ui/Flick.Shared/Flick.Shared.csproj"
+    "ui/Flick.Upload/Flick.Upload.csproj"
+    "ui/Flick.Drawing/Flick.Drawing.csproj"
 )
 
 # Some older packages ship a nuspec without an SPDX <license type="expression">
@@ -45,9 +45,9 @@ declare -A LICENSE_OVERRIDES=(
 )
 
 # Shipped components no dependency manifest can enumerate: the model weights
-# prisc_ai embeds (see crates/prisc_ai/assets/models/README.md), the
+# flick_ai embeds (see crates/flick_ai/assets/models/README.md), the
 # ONNX Runtime the ort crate links statically into it, and the native stack the
-# recorder (crates/prisc_recorder) builds and ships in its recorder/ folder:
+# recorder (crates/flick_recorder) builds and ships in its recorder/ folder:
 # libobs and its plugins from the obs-studio submodule, FFmpeg and x264.
 # Merged into the Rust section.
 # Fields are name|version|license|url; version may be empty.
@@ -111,7 +111,7 @@ mv "$TMP/rust.merged.json" "$TMP/rust.json"
 # each package's cached .nuspec (SPDX license expression / repository url).
 # ---------------------------------------------------------------------------
 echo "==> Restoring .NET packages"
-dotnet restore "$ROOT/ui/Prisc.Ui/Prisc.Ui.csproj" >/dev/null
+dotnet restore "$ROOT/ui/Flick.Ui/Flick.Ui.csproj" >/dev/null
 
 NUGET="$(dotnet nuget locals global-packages --list | sed -E 's/^[^:]*: *//' | tr -d '\r')"
 echo "==> Reading NuGet package licenses from $NUGET"

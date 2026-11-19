@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # Assembles the self-contained recorder runtime (the recorder/ folder beside
-# Prisc.Ui, which HelperLocator resolves) from a cargo profile dir that a
+# Flick.Ui, which HelperLocator resolves) from a cargo profile dir that a
 # release build of the recorder packages (shipped.sh: recorder_packages) has
 # filled, and checks it. Used by build.sh and build-recorder.yml.
 #
 #   stage-recorder.sh <rid> <cargo profile dir> <dest>
 #
-# Windows: the runtime tree prisc_recorder's build.rs assembled in the profile
+# Windows: the runtime tree flick_recorder's build.rs assembled in the profile
 #   dir (obs.dll, graphics modules, FFmpeg/x264 DLLs, core/, data/),
 #   plus the VC++ runtime.
 # macOS: libobs.framework, the graphics modules, the dep dylibs build.rs
@@ -52,16 +52,16 @@ stage_windows() {
   # DirectML companion), which share the profile dir when build.sh builds
   # both halves together. That leaves the recorder executables, the
   # obs-*-test.exe probes, obs.dll, its graphics modules and the FFmpeg/x264
-  # runtime DLLs. *.pdb and cargo's build junk stay behind. No prisc_*.dll is
+  # runtime DLLs. *.pdb and cargo's build junk stay behind. No flick_*.dll is
   # the recorder's (its own binaries are all .exe), so every one is skipped,
-  # like libprisc_* on macOS: a dll a reused target dir still holds from an
-  # older build (prisc_hotkeys.dll, now linked into prisc_interop) stays out.
+  # like libflick_* on macOS: a dll a reused target dir still holds from an
+  # older build (flick_hotkeys.dll, now linked into flick_interop) stays out.
   local skip
   skip=$(app_symbolicated_binaries "$rid"; echo DirectML.dll)
   for f in "$src"/*.exe "$src"/*.dll; do
     [ -f "$f" ] || continue
     name=$(basename "$f")
-    case "$name" in prisc_*.dll) continue ;; esac
+    case "$name" in flick_*.dll) continue ;; esac
     if grep -qxF "$name" <<< "$skip"; then continue; fi
     cp "$f" "$dist/"
   done
@@ -71,7 +71,7 @@ stage_windows() {
   # checks its own result).
   copy_vc_runtime "$rid" "$dist"
 
-  # prisc_vid2gif links the FFmpeg DLLs directly; it is a hard shipping
+  # flick_vid2gif links the FFmpeg DLLs directly; it is a hard shipping
   # requirement on every platform (no separate ffmpeg.exe needed). The FFmpeg
   # names carry their ABI major, which an obs-deps bump changes, so match any.
   # shellcheck disable=SC2046 # one name per line, none with spaces
@@ -83,12 +83,12 @@ stage_macos() {
   case "$rid:$(uname -m)" in osx-arm64:arm64 | osx-x64:x86_64) native=1 ;; esac
   mkdir -p "$dist/Frameworks" "$dist/obs-plugins"
 
-  # Locate the OBS build tree prisc_obs_sys assembled (OUT_DIR/obs-build).
-  # Several prisc_obs_sys/<hash>/out/obs-build dirs can accumulate (a restored
-  # CI cache, prisc_obs_sys/build.rs changing across commits), so pick the
+  # Locate the OBS build tree flick_obs_sys assembled (OUT_DIR/obs-build).
+  # Several flick_obs_sys/<hash>/out/obs-build dirs can accumulate (a restored
+  # CI cache, flick_obs_sys/build.rs changing across commits), so pick the
   # newest one that actually holds the built framework.
   # shellcheck disable=SC2045 # build dirs have no spaces; ls -t sorts by age
-  for cand in $(ls -dt "$src"/build/prisc_obs_sys/*/out/obs-build 2>/dev/null); do
+  for cand in $(ls -dt "$src"/build/flick_obs_sys/*/out/obs-build 2>/dev/null); do
     if [ -d "$cand/libobs/$config/libobs.framework" ]; then obs_build="$cand"; break; fi
   done
   echo "OBS build tree: ${obs_build:-<none found>}"
@@ -110,8 +110,8 @@ stage_macos() {
   #    signature, so they are self-resolving for any consumer that dlopens
   #    them, and the dev tree and this bundle carry byte-identical files.
   #    `cp -a` keeps the versioned aliases as symlinks. The app's own
-  #    libprisc_interop.dylib shares the profile dir under build.sh.
-  find "$src" -maxdepth 1 -name '*.dylib' ! -name 'libprisc_*' -exec cp -a {} "$dist/Frameworks/" \;
+  #    libflick_interop.dylib shares the profile dir under build.sh.
+  find "$src" -maxdepth 1 -name '*.dylib' ! -name 'libflick_*' -exec cp -a {} "$dist/Frameworks/" \;
   for f in libavcodec.dylib libavformat.dylib libavutil.dylib libx264.dylib; do
     require "Frameworks/$f"
   done
@@ -144,8 +144,8 @@ stage_macos() {
   while IFS= read -r f; do
     relocate "$dist/$f"
   done < <(recorder_binaries "$rid")
-  # Plugin binaries are dlopen'd by prisc_recorder; @executable_path in them
-  # resolves to prisc_recorder, so the same rpath reaches the Frameworks dir
+  # Plugin binaries are dlopen'd by flick_recorder; @executable_path in them
+  # resolves to flick_recorder, so the same rpath reaches the Frameworks dir
   # beside it.
   find "$dist/obs-plugins" -type f -path '*/Contents/MacOS/*' | while read -r pb; do
     install_name_tool -add_rpath "@executable_path/Frameworks" "$pb" 2>/dev/null || true
@@ -153,17 +153,17 @@ stage_macos() {
   done
 
   # 6. Verify relocation: relative rpaths only, no build-tree leakage.
-  echo "=== prisc_recorder LC_RPATH ==="
-  otool -l "$dist/prisc_recorder" | grep -A2 'cmd LC_RPATH' | awk '$1=="path"{print "  rpath:",$2}'
+  echo "=== flick_recorder LC_RPATH ==="
+  otool -l "$dist/flick_recorder" | grep -A2 'cmd LC_RPATH' | awk '$1=="path"{print "  rpath:",$2}'
   # tail skips otool's header line, which echoes the (absolute) path of the binary itself.
-  if otool -l "$dist/prisc_recorder" | tail -n +2 | grep -Eq "/Users/|obs-build|/\.deps/"; then
-    echo "::error::prisc_recorder still references an absolute build-tree path"
-    otool -l "$dist/prisc_recorder" | tail -n +2 | grep -E "/Users/|obs-build|/\.deps/" || true
+  if otool -l "$dist/flick_recorder" | tail -n +2 | grep -Eq "/Users/|obs-build|/\.deps/"; then
+    echo "::error::flick_recorder still references an absolute build-tree path"
+    otool -l "$dist/flick_recorder" | tail -n +2 | grep -E "/Users/|obs-build|/\.deps/" || true
     exit 1
   fi
-  codesign -v "$dist/prisc_recorder" || { echo "::error::prisc_recorder signature invalid"; exit 1; }
+  codesign -v "$dist/flick_recorder" || { echo "::error::flick_recorder signature invalid"; exit 1; }
 
-  # 7. Verify prisc_vid2gif (links the bundled FFmpeg dylibs). The arch the
+  # 7. Verify flick_vid2gif (links the bundled FFmpeg dylibs). The arch the
   #    host runs gets a real conversion against a repo fixture; a
   #    cross-compiled slice can only be checked for presence.
   if [ "$native" = 1 ]; then
@@ -177,16 +177,16 @@ stage_macos() {
     mkfifo "$tmp/stdin"
     sleep 600 > "$tmp/stdin" 2> /dev/null &
     holder=$!
-    "$dist/prisc_vid2gif" "$root/crates/prisc_vid2gif/tests/fixtures/clip.mp4" "$gif" --quality fair < "$tmp/stdin"
+    "$dist/flick_vid2gif" "$root/crates/flick_vid2gif/tests/fixtures/clip.mp4" "$gif" --quality fair < "$tmp/stdin"
     kill "$holder" 2> /dev/null || true
     [ "$(head -c 6 "$gif")" = "GIF89a" ]
-    echo "prisc_vid2gif GIF toolchain OK"
+    echo "flick_vid2gif GIF toolchain OK"
   fi
 
   # 8. Verify the dep dylibs are self-resolving: @loader_path rpath and a
   #    valid signature on every real file (the symlink aliases resolve to
   #    them), and, on the native slice, an actual dlopen from a process that
-  #    is NOT prisc_recorder. libavformat has the widest @rpath fan-out in the
+  #    is NOT flick_recorder. libavformat has the widest @rpath fan-out in the
   #    payload (avcodec, swresample, avutil, rist, srt, mbedtls x3, x264), so
   #    if it loads, everything does.
   find "$dist/Frameworks" -maxdepth 1 -type f -name 'lib*.dylib' ! -name 'libobs-*.dylib' | while read -r lib; do

@@ -4,7 +4,7 @@
 # CI's Windows runners have no GPU, so the D3D12 paths only run on WARP, the
 # software adapter. The set of filtered GPU tests that must pass there is the
 # set that passed on BASE, with the old C# D3D12 code, before any area moved
-# it to prisc_interop. Some of those tests may never have passed on WARP: the
+# it to flick_interop. Some of those tests may never have passed on WARP: the
 # old code skipped software adapters, so a BASE failure is a result to record,
 # not a regression. This script reads the trx a `dotnet test --logger trx` run
 # wrote and checks it against tools/warp-baseline.txt, one test per line:

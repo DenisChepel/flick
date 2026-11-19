@@ -1,7 +1,7 @@
 name: Build recorder
 
-# Reusable build of the recorder stack (crates/prisc_recorder, prisc_share_region,
-# prisc_vid2gif and libobs from the obs-studio submodule, built by prisc_obs_sys
+# Reusable build of the recorder stack (crates/flick_recorder, flick_share_region,
+# flick_vid2gif and libobs from the obs-studio submodule, built by flick_obs_sys
 # via CMake) for the packaged desktop platforms: recorder-win-x64,
 # recorder-win-arm64, recorder-osx-arm64 and recorder-osx-x64.
 # build-recorder-linux.yml is the Linux twin; the shared steps live in
@@ -21,7 +21,7 @@ name: Build recorder
 #
 # No step tags the tagless obs-studio checkout for OBS's `git describe --tags`
 # version discovery: the top-level configure gets -DOBS_VERSION_OVERRIDE, and
-# the Windows child configures that ignore it are covered by prisc_obs_sys's
+# the Windows child configures that ignore it are covered by flick_obs_sys's
 # ensure_obs_version_tag, which tags HEAD before every configure.
 on:
   workflow_call:
@@ -32,7 +32,7 @@ env:
 jobs:
   # ---------------------------------------------------------------------------
   # Windows: Visual Studio generator (newest installed VS, -A per arch),
-  # prisc_obs_sys builds libobs into target/obs-<arch>, and the prisc_recorder
+  # flick_obs_sys builds libobs into target/obs-<arch>, and the flick_recorder
   # build.rs assembles a self-contained runtime tree in target/release. That
   # whole tree, zipped, is the artifact. Each arch builds natively on its
   # matching runner (windows-2022 = x64, windows-11-arm = arm64), so no
@@ -46,7 +46,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # prisc_obs_sys picks the CMake generator from the newest installed VS
+          # flick_obs_sys picks the CMake generator from the newest installed VS
           # (vswhere), so either VS 2022 or VS 2026 images work. windows-11-arm
           # moved to the VS 2026 image in Oct 2026; x64 stays on windows-2022.
           - rid: win-x64
@@ -91,23 +91,23 @@ jobs:
           obs-build-path: target/obs-${{ matrix.arch }}
 
       - name: Build (release)
-        run: cargo build --release -p prisc_recorder -p prisc_share_region -p prisc_vid2gif
+        run: cargo build --release -p flick_recorder -p flick_share_region -p flick_vid2gif
 
       - name: Test (release, unit tests only)
         run: |
-          # prisc_recorder links obs.dll (import lib). Its build.rs assembles
+          # flick_recorder links obs.dll (import lib). Its build.rs assembles
           # the runtime DLLs in target/release, which cargo test puts on the
           # test executables' PATH.
-          cargo test --release -p prisc_recorder -p prisc_obs_platform -p prisc_share_region
+          cargo test --release -p flick_recorder -p flick_obs_platform -p flick_share_region
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          # prisc_vid2gif links the bundled FFmpeg DLLs; its tests are fully
+          # flick_vid2gif links the bundled FFmpeg DLLs; its tests are fully
           # self-contained (repo fixtures + generated raw inputs + a GIF
-          # byte-stream validator). prisc_ffmpeg_sys verifies linkage + ABI version.
-          cargo test --release -p prisc_vid2gif
+          # byte-stream validator). flick_ffmpeg_sys verifies linkage + ABI version.
+          cargo test --release -p flick_vid2gif
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          cargo test --release -p prisc_ffmpeg_sys
+          cargo test --release -p flick_ffmpeg_sys
 
-      # The runtime tree prisc_recorder's build.rs assembled in target/release,
+      # The runtime tree flick_recorder's build.rs assembled in target/release,
       # plus the VC++ runtime the /MD-built libobs, plugins and FFmpeg DLLs import.
       - name: Stage artifact
         shell: bash
@@ -131,7 +131,7 @@ jobs:
           compression-level: 0
 
   # ---------------------------------------------------------------------------
-  # macOS: Xcode generator, prisc_obs_sys builds libobs.framework. Both slices
+  # macOS: Xcode generator, flick_obs_sys builds libobs.framework. Both slices
   # run on the arm64 macos-26 runner; the x64 slice is cross-compiled via
   # `--target x86_64-apple-darwin` (build.rs forwards the arch to
   # CMAKE_OSX_ARCHITECTURES; OBS's macOS prebuilt deps are universal). The Stage
@@ -198,16 +198,16 @@ jobs:
           clang --version
           echo "Target: ${{ matrix.triple }}"
 
-      # prisc_obs_sys has no build-dir override on macOS; the OBS build lands in
+      # flick_obs_sys has no build-dir override on macOS; the OBS build lands in
       # its OUT_DIR, under the per-target output dir.
       - name: Set up the OBS build caches
         uses: ./.github/actions/setup-obs-build
         with:
           arch: ${{ matrix.arch }}
-          obs-build-path: ${{ matrix.outdir }}/build/prisc_obs_sys/*/out
+          obs-build-path: ${{ matrix.outdir }}/build/flick_obs_sys/*/out
 
       - name: Build (release)
-        run: cargo build --release -p prisc_recorder -p prisc_share_region -p prisc_vid2gif ${{ matrix.target_flag }}
+        run: cargo build --release -p flick_recorder -p flick_share_region -p flick_vid2gif ${{ matrix.target_flag }}
 
       - name: Test (release, unit tests only)
         # Only the arm64 slice is native to the arm64 runner; the x64 slice is
@@ -216,11 +216,11 @@ jobs:
         # preserved.
         if: matrix.arch == 'arm64'
         run: |
-          cargo test --release -p prisc_recorder -p prisc_obs_platform -p prisc_share_region ${{ matrix.target_flag }}
-          # prisc_vid2gif links the FFmpeg dylibs directly — its integration tests
+          cargo test --release -p flick_recorder -p flick_obs_platform -p flick_share_region ${{ matrix.target_flag }}
+          # flick_vid2gif links the FFmpeg dylibs directly — its integration tests
           # are self-contained (repo fixtures + generated raw video inputs).
-          cargo test --release -p prisc_vid2gif ${{ matrix.target_flag }}
-          cargo test --release -p prisc_ffmpeg_sys ${{ matrix.target_flag }}
+          cargo test --release -p flick_vid2gif ${{ matrix.target_flag }}
+          cargo test --release -p flick_ffmpeg_sys ${{ matrix.target_flag }}
 
       # The arm64 slice also runs a vid2gif conversion and a foreign dlopen of
       # the dep dylibs; the cross-compiled x64 slice cannot execute here.
@@ -244,9 +244,9 @@ jobs:
           zip="$dist.zip"
           ditto -c -k --norsrc "$dist" "$zip"
           echo "symlink entries: $(zipinfo "$zip" | grep -c '^l' || true)"
-          zipinfo "$zip" | grep -E ' (prisc_recorder|prisc_vid2gif|obs-ffmpeg-mux)$'
+          zipinfo "$zip" | grep -E ' (flick_recorder|flick_vid2gif|obs-ffmpeg-mux)$'
           [ "$(zipinfo "$zip" | grep -c '^l')" -gt 0 ] || { echo "::error::archive lost its symlinks"; exit 1; }
-          zipinfo "$zip" | grep -E ' prisc_recorder$' | grep -q '^-rwx' || { echo "::error::archive lost the execute bit"; exit 1; }
+          zipinfo "$zip" | grep -E ' flick_recorder$' | grep -q '^-rwx' || { echo "::error::archive lost the execute bit"; exit 1; }
           ls -la "$zip"
 
       - name: Upload artifact

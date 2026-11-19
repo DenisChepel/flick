@@ -1,30 +1,30 @@
 [
   {
-    "label": "Build Prisc.Ui (Debug)",
+    "label": "Build Flick.Ui (Debug)",
     "command": "dotnet",
     "args": [
       "build",
-      "${ZED_WORKTREE_ROOT}/ui/Prisc.Ui/Prisc.Ui.csproj",
+      "${ZED_WORKTREE_ROOT}/ui/Flick.Ui/Flick.Ui.csproj",
       "-p:Configuration=Debug",
     ],
   },
   {
-    "label": "Build prisc_capture (Debug)",
+    "label": "Build flick_capture (Debug)",
     "command": "cargo",
-    "args": ["build", "-p", "prisc_capture"],
+    "args": ["build", "-p", "flick_capture"],
   },
   {
     "label": "Rebuild All",
     "command": "dotnet",
     "args": [
       "build",
-      "${ZED_WORKTREE_ROOT}/ui/Prisc.Ui/Prisc.Ui.csproj",
+      "${ZED_WORKTREE_ROOT}/ui/Flick.Ui/Flick.Ui.csproj",
       "-p:Configuration=Debug",
       ";",
       "cargo",
       "build",
       "-p",
-      "prisc_capture",
+      "flick_capture",
     ],
   },
 ]

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Prisc.VideoSDK.Composition;
+using Flick.VideoSDK.Composition;
 using SkiaSharp;
-using Sheet = Prisc.VideoSDK.Composition.BackgroundTileSheet;
+using Sheet = Flick.VideoSDK.Composition.BackgroundTileSheet;
 
-namespace Prisc.Tools.BackgroundTiles
+namespace Flick.Tools.BackgroundTiles
 {
     /// <summary>
     /// Generates the pre-rendered loop sheets the video editor's background STYLE tiles play
@@ -53,7 +53,7 @@ namespace Prisc.Tools.BackgroundTiles
         private const int LossyQuality = 92;
 
         /// <summary>Where the sheets are written, relative to the repo root.</summary>
-        private const string DefaultOutput = "ui/Prisc.Ui/Assets/BackgroundTiles";
+        private const string DefaultOutput = "ui/Flick.Ui/Assets/BackgroundTiles";
 
         private static int Main(string[] args)
         {
@@ -436,15 +436,15 @@ namespace Prisc.Tools.BackgroundTiles
 
         // ------------------------------------------------------------------------------ paths
 
-        /// <summary>The repo root, found by walking up from the running assembly until Prisc.slnx
+        /// <summary>The repo root, found by walking up from the running assembly until Flick.slnx
         /// turns up, so the tool can be run from anywhere.</summary>
         private static string RepoRoot()
         {
             var dir = new DirectoryInfo(AppContext.BaseDirectory);
-            while (dir != null && !File.Exists(Path.Combine(dir.FullName, "Prisc.slnx")))
+            while (dir != null && !File.Exists(Path.Combine(dir.FullName, "Flick.slnx")))
                 dir = dir.Parent;
             if (dir == null)
-                throw new InvalidOperationException("could not find Prisc.slnx above " + AppContext.BaseDirectory);
+                throw new InvalidOperationException("could not find Flick.slnx above " + AppContext.BaseDirectory);
             return dir.FullName;
         }
     }

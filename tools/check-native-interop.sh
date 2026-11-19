@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Fails when C# under ui/ hand-writes native interop outside the allowlist.
 #
-# All native calls from C# go through ui/Prisc.Interop, whose bindings are
-# generated from crates/prisc_interop (cargo codegen). Everything else under
+# All native calls from C# go through ui/Flick.Interop, whose bindings are
+# generated from crates/flick_interop (cargo codegen). Everything else under
 # ui/ must not declare or call natives itself. This script scans every text
 # file under ui/ that git tracks or would track (untracked files included,
 # ignored ones such as bin/ and obj/ skipped) for these patterns, by name:
@@ -172,7 +172,7 @@ my $nfiles = scalar @files;
 my $nrules = scalar @rules;
 if ($errors) {
   print STDERR "check-native-interop: $errors error(s), $warnings warning(s) ($nfiles files, $sites matches, $nrules allowlist lines)\n";
-  print STDERR "Natives belong in crates/prisc_interop, reached through ui/Prisc.Interop (crates/prisc_interop/README.md).\n";
+  print STDERR "Natives belong in crates/flick_interop, reached through ui/Flick.Interop (crates/flick_interop/README.md).\n";
   exit 1;
 }
 print "check-native-interop: ok, $warnings warning(s) ($nfiles files, $sites matches, $nrules allowlist lines)\n";

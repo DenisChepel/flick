@@ -6,7 +6,7 @@
 #
 #   tools/linux-build/verify-bundle.sh <bundle dir> <ffprobe> [work dir]
 #
-# <ffprobe> is the BtbN ffprobe from the FFmpeg archive prisc_obs_sys pinned; it is
+# <ffprobe> is the BtbN ffprobe from the FFmpeg archive flick_obs_sys pinned; it is
 # run against the bundle's own FFmpeg libraries (LD_LIBRARY_PATH), so the
 # machine needs no FFmpeg of its own. Needs xvfb-run, and Mesa's llvmpipe
 # (EGL + DRI) for libobs's OpenGL renderer under Xvfb.
@@ -16,7 +16,7 @@ bundle=${1:?usage: verify-bundle.sh <bundle dir> <ffprobe> [work dir]}
 ffprobe_bin=${2:?usage: verify-bundle.sh <bundle dir> <ffprobe> [work dir]}
 work=${3:-$(mktemp -d)}
 
-moved="$work/prisc-recorder-relocated"
+moved="$work/flick-recorder-relocated"
 out="$work/smoke"
 rm -rf "$moved" "$out"; mkdir -p "$out"
 cp -a "$bundle" "$moved"
@@ -45,7 +45,7 @@ done < <(find "$moved" -type f -print0)
 echo "ldd: every ELF file in the relocated bundle resolves, with all symbols defined"
 
 # 2. Record ~3 s under Xvfb, then `{"type":"quit"}` on stdin (the helper
-#    protocol, crates/prisc_capture/HELPER_PROTOCOL.md). Without a pulse server the
+#    protocol, crates/flick_capture/HELPER_PROTOCOL.md). Without a pulse server the
 #    audio sources still create and record silence, which is enough to prove
 #    the AAC tracks are wired.
 #    The 3 s count from `started_recording`, not from process start: startup
@@ -56,7 +56,7 @@ record() {
   local fifo="$out/$name.stdin" pid w
   rm -f "$fifo"; mkfifo "$fifo"
   xvfb-run -a -s "-screen 0 1280x720x24 +extension RANDR" \
-    sh -c "'$moved/prisc_recorder' $* < '$fifo' > '$out/$name.out' 2> '$out/$name.err'" &
+    sh -c "'$moved/flick_recorder' $* < '$fifo' > '$out/$name.out' 2> '$out/$name.err'" &
   pid=$!
   # Read-write open: never blocks, and keeps the pipe open until `quit`
   # (EOF would be a quit too).
@@ -106,23 +106,23 @@ s=$(streams "$out/multi.mp4"); echo "multi.mp4:"; echo "$s"
 [ "$(grep -c '^aac' <<< "$s")" -eq 2 ]  || { echo "::error::multi.mp4: expected 2 audio tracks"; exit 1; }
 grep -q '^h264,640,480,' <<< "$s" || { echo "::error::multi.mp4: screen track is not 640x480"; exit 1; }
 
-# 3. prisc_vid2gif on the recording, from the relocated bundle. stdin is held
+# 3. flick_vid2gif on the recording, from the relocated bundle. stdin is held
 #    open, since EOF on it cancels the conversion, by a writer that is stopped
 #    right after (as in tools/staging/stage-recorder.sh, where a process
 #    substitution's sleep was seen keeping a piped stdout open).
 mkfifo "$out/vid2gif-stdin"
 sleep 600 > "$out/vid2gif-stdin" 2> /dev/null &
 holder=$!
-"$moved/prisc_vid2gif" "$out/single.mp4" "$out/single.gif" --quality fair < "$out/vid2gif-stdin" | tail -1
+"$moved/flick_vid2gif" "$out/single.mp4" "$out/single.gif" --quality fair < "$out/vid2gif-stdin" | tail -1
 kill "$holder" 2> /dev/null || true
-[ "$(head -c 6 "$out/single.gif")" = "GIF89a" ] || { echo "::error::prisc_vid2gif did not produce a GIF"; exit 1; }
+[ "$(head -c 6 "$out/single.gif")" = "GIF89a" ] || { echo "::error::flick_vid2gif did not produce a GIF"; exit 1; }
 
 # 4. Out-of-scope features fail fast instead of misbehaving, and the
 #    share-region binary (not built on Linux) is not shipped.
-if [ -e "$moved/prisc_share_region" ]; then
-  echo "::error::prisc_share_region is not built on Linux and must not be in the bundle"; exit 1
+if [ -e "$moved/flick_share_region" ]; then
+  echo "::error::flick_share_region is not built on Linux and must not be in the bundle"; exit 1
 fi
-code=0; "$moved/prisc_recorder" --output "$out/x.mp4" --tracker 2> "$out/tracker.err" || code=$?
+code=0; "$moved/flick_recorder" --output "$out/x.mp4" --tracker 2> "$out/tracker.err" || code=$?
 [ "$code" -eq 2 ] || { echo "::error::--tracker should exit 2 on Linux, got $code"; exit 1; }
 # shellcheck disable=SC1091 # the running system's os-release
 echo "Smoke OK ($(. /etc/os-release && echo "$PRETTY_NAME"), $(ldd --version | sed -n 1p))"

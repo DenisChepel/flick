@@ -65,7 +65,7 @@ for exe in "${rust_exes[@]}"; do
 done
 
 cat > "$dist/README.txt" <<'README'
-prisc_recorder (Linux, self-contained)
+flick_recorder (Linux, self-contained)
 
 libobs, the OpenGL renderer, the OBS plugins (obs-plugins/), their data
 (data/) and the FFmpeg shared libraries are bundled alongside the binaries;

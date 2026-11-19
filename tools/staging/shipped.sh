@@ -1,5 +1,5 @@
 # shellcheck shell=bash
-# The one list of what a Prisc package ships, sourced by the other scripts in
+# The one list of what a Flick package ships, sourced by the other scripts in
 # this directory (stage-app.sh, stage-recorder.sh, verify-package.sh), which
 # build.sh and the CI workflows call. Adding a binary here adds it to the
 # cargo package list, the staging, the Sentry debug-file upload and the
@@ -25,7 +25,7 @@ rid_exe() {
   case "$1" in win-*) echo .exe ;; *) echo "" ;; esac
 }
 
-# Whether prisc_ai builds for this RID. Upstream ONNX Runtime dropped macOS
+# Whether flick_ai builds for this RID. Upstream ONNX Runtime dropped macOS
 # x86_64, so ort has no binaries for it: the app grays the AI effects out there
 # and the overlay reports OCR as unavailable.
 rid_has_ai() {
@@ -38,23 +38,23 @@ rid_has_ai() {
 # app_files.
 app_packages() {
   local rid=$1
-  echo prisc_capture
-  # prisc_scroll_driver is a compile_error! on Linux (no backend there).
-  case "$rid" in linux-*) ;; *) echo prisc_scroll_driver ;; esac
-  if rid_has_ai "$rid"; then echo prisc_ai; fi
-  case "$rid" in win-*) echo prisc_shell_ext ;; esac
+  echo flick_capture
+  # flick_scroll_driver is a compile_error! on Linux (no backend there).
+  case "$rid" in linux-*) ;; *) echo flick_scroll_driver ;; esac
+  if rid_has_ai "$rid"; then echo flick_ai; fi
+  case "$rid" in win-*) echo flick_shell_ext ;; esac
 }
 
 # Cargo packages of the app that must each be built in a cargo invocation of
 # their own, never beside app_packages. One `cargo build -p a -p b` unifies
 # dependency features across a and b, so the in-process library would pick up
-# prisc_capture's (all of AppKit, for one); built alone it
+# flick_capture's (all of AppKit, for one); built alone it
 # links exactly what its own manifest asks for (build-rust.yml then checks
-# the artifact). prisc_interop is the one native library Prisc.Ui and
-# Prisc.VideoRender load in-process; no C# ships on Linux, so it is not built
+# the artifact). flick_interop is the one native library Flick.Ui and
+# Flick.VideoRender load in-process; no C# ships on Linux, so it is not built
 # there. One per line.
 app_packages_isolated() {
-  case "$1" in win-*|osx-*) echo prisc_interop ;; esac
+  case "$1" in win-*|osx-*) echo flick_interop ;; esac
 }
 
 # The file name a cdylib package builds to for a RID.
@@ -68,16 +68,16 @@ rid_cdylib() {
 }
 
 # The app's Rust binaries, as named in the cargo profile dir. They ship beside
-# Prisc.Ui, which (with the overlay, for prisc_scroll_driver and prisc_ai)
+# Flick.Ui, which (with the overlay, for flick_scroll_driver and flick_ai)
 # resolves them as its siblings. One per line.
 app_binaries() {
   local rid=$1 exe
   exe=$(rid_exe "$rid")
-  echo "prisc_capture$exe"
-  case "$rid" in linux-*) ;; *) echo "prisc_scroll_driver$exe" ;; esac
-  if rid_has_ai "$rid"; then echo "prisc_ai$exe"; fi
-  # The in-process interop library (app_packages_isolated) that Prisc.Ui and
-  # Prisc.VideoRender load from beside themselves.
+  echo "flick_capture$exe"
+  case "$rid" in linux-*) ;; *) echo "flick_scroll_driver$exe" ;; esac
+  if rid_has_ai "$rid"; then echo "flick_ai$exe"; fi
+  # The in-process interop library (app_packages_isolated) that Flick.Ui and
+  # Flick.VideoRender load from beside themselves.
   local pkg
   for pkg in $(app_packages_isolated "$rid"); do rid_cdylib "$rid" "$pkg"; done
 }
@@ -86,17 +86,17 @@ app_binaries() {
 # shipped ones plus the shell extension.
 app_symbolicated_binaries() {
   app_binaries "$1"
-  case "$1" in win-*) echo prisc_shell_ext.dll ;; esac
+  case "$1" in win-*) echo flick_shell_ext.dll ;; esac
 }
 
-# Cargo packages of the recorder stack. prisc_share_region is not built on
+# Cargo packages of the recorder stack. flick_share_region is not built on
 # Linux (no Linux UI; see its README).
 recorder_packages() {
-  echo prisc_recorder prisc_vid2gif
-  case "$1" in linux-*) ;; *) echo prisc_share_region ;; esac
+  echo flick_recorder flick_vid2gif
+  case "$1" in linux-*) ;; *) echo flick_share_region ;; esac
 }
 
-# The recorder's executables, which ship in recorder/ beside Prisc.Ui with the
+# The recorder's executables, which ship in recorder/ beside Flick.Ui with the
 # libobs runtime the stage scripts add around them. One per line. obs-ffmpeg-mux
 # is required, not best effort: the default ffmpeg_muxer output cannot record
 # without it, so a build that lacks it fails at staging rather than shipping.
@@ -114,7 +114,7 @@ as_cargo_args() {
 
 # Copies the VC++ runtime (msvcp140/vcruntime140) for a win-* RID into $2,
 # from the newest Visual Studio redist installed. Everything /MD needs it
-# app-local: prisc_ai (its build.rs swaps it off +crt-static to match pyke's
+# app-local: flick_ai (its build.rs swaps it off +crt-static to match pyke's
 # ONNX Runtime libs) and the CMake-built libobs, plugins and FFmpeg DLLs. These
 # are not OS components, so shipping them is the only way to be sure they are
 # there. Fails when the redist is missing, unless VCRT_OPTIONAL=1 (build.sh: a

@@ -1,10 +1,10 @@
-You are writing the GitHub release notes for Prisc (formerly Clowd), a minimalist screen capture and
-screen recording tool for Windows and macOS. The audience is end users, not developers. Always call the app Prisc, never Clowd.
+You are writing the GitHub release notes for Flick (formerly Clowd), a minimalist screen capture and
+screen recording tool for Windows and macOS. The audience is end users, not developers. Always call the app Flick, never Clowd.
 
 The one exception is the release that ships the rename: when the lines before these instructions
-say that this range ships the rename from Clowd to Prisc, start the notes with a short
-`## Clowd is now Prisc` section, and name the old app nowhere else. Say that the app has a new
-name, existing installs keep updating automatically, and settings and captures carry over. Then say what upgrading users will notice: on macOS, Prisc
+say that this range ships the rename from Clowd to Flick, start the notes with a short
+`## Clowd is now Flick` section, and name the old app nowhere else. Say that the app has a new
+name, existing installs keep updating automatically, and settings and captures carry over. Then say what upgrading users will notice: on macOS, Flick
 asks again for Screen Recording, Accessibility, Input Monitoring, Microphone and Camera access;
 on Windows, taskbar pins of the old app stop working and need pinning again, and a tray icon that
 was kept next to the clock may need dragging out of the overflow menu again.

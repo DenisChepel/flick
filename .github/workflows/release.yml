@@ -139,10 +139,10 @@ jobs:
 
           if [ "${{ runner.os }}" = "macOS" ]; then
             # The macOS artifact is a zip, which preserves unix file modes.
-            gh run download ${{ inputs.run_id }} --repo ${{ github.repository }} -n prisc-${{ matrix.rid }} -D package
-            unzip -q "package/prisc-${{ matrix.rid }}.zip" -d publish
+            gh run download ${{ inputs.run_id }} --repo ${{ github.repository }} -n flick-${{ matrix.rid }} -D package
+            unzip -q "package/flick-${{ matrix.rid }}.zip" -d publish
           else
-            gh run download ${{ inputs.run_id }} --repo ${{ github.repository }} -n prisc-${{ matrix.rid }} -D publish
+            gh run download ${{ inputs.run_id }} --repo ${{ github.repository }} -n flick-${{ matrix.rid }} -D publish
           fi
           echo "Publishing version $VERSION to channel $CHANNEL"
         shell: bash
@@ -169,8 +169,8 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           # A build from before the shell extension existed has no msix, and the pack below still works without one.
-          if (-not (Test-Path publish/PriscShellExt.msix)) {
-            Write-Warning "publish/PriscShellExt.msix not found - skipping shell extension signing."
+          if (-not (Test-Path publish/FlickShellExt.msix)) {
+            Write-Warning "publish/FlickShellExt.msix not found - skipping shell extension signing."
             exit 0
           }
           # The Trusted Signing dlib only ships with vpk, in a signing dir somewhere under its tool
@@ -195,20 +195,20 @@ jobs:
           Write-Host "dlib: $($dlib.FullName)"
           & $signtool sign /fd SHA256 /tr http://timestamp.acs.microsoft.com /td SHA256 `
             /dlib $dlib.FullName /dmdf .github/azure-trusted-sign.json `
-            publish/PriscShellExt.msix
+            publish/FlickShellExt.msix
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
         shell: pwsh
 
-      # vpk names the install root's launcher stub after --packTitle (Prisc.exe), not after
+      # vpk names the install root's launcher stub after --packTitle (Flick.exe), not after
       # --mainExe; SparsePackageManager.RootStubFileName and the sparse MSIX manifest's
-      # Application Executable (crates/prisc_shell_ext/msix) must name that same file.
+      # Application Executable (crates/flick_shell_ext/msix) must name that same file.
       - name: Pack (Windows)
         if: runner.os == 'Windows'
         run: >
-          vpk pack --packId Prisc --packTitle Prisc --packAuthors "Caelan Sayler"
-          --packVersion "$VERSION" --packDir publish --mainExe Prisc.Ui.exe
+          vpk pack --packId Flick --packTitle Flick --packAuthors "Denis Chepel"
+          --packVersion "$VERSION" --packDir publish --mainExe Flick.Ui.exe
           --runtime ${{ matrix.rid }} --channel "$CHANNEL" -o releases
-          --icon ui/Prisc.Ui/Assets/prisc-default.ico
+          --icon ui/Flick.Ui/Assets/flick-default.ico
           --shortcuts Desktop,StartMenuRoot
           --azureTrustedSignFile .github/azure-trusted-sign.json
         shell: bash
@@ -263,19 +263,19 @@ jobs:
         run: |
           SHORT_VERSION="$(echo "$VERSION" | sed 's/-.*//').0"
           sed -e "s/{{VERSION}}/$VERSION/" -e "s/{{SHORT_VERSION}}/$SHORT_VERSION/" \
-            ui/Prisc.Ui/Assets/Info.plist > "$RUNNER_TEMP/Info.plist"
+            ui/Flick.Ui/Assets/Info.plist > "$RUNNER_TEMP/Info.plist"
           cat "$RUNNER_TEMP/Info.plist"
         shell: bash
 
       - name: Pack (macOS)
         if: runner.os == 'macOS'
         run: >
-          vpk pack --packId Prisc --packTitle Prisc --packAuthors "Caelan Sayler"
-          --packVersion "$VERSION" --packDir publish --mainExe Prisc.Ui
+          vpk pack --packId Flick --packTitle Flick --packAuthors "Denis Chepel"
+          --packVersion "$VERSION" --packDir publish --mainExe Flick.Ui
           --runtime ${{ matrix.rid }} --channel "$CHANNEL" -o releases
-          --icon ui/Prisc.Ui/Assets/prisc-default.icns
+          --icon ui/Flick.Ui/Assets/flick-default.icns
           --plist "$RUNNER_TEMP/Info.plist"
-          --signEntitlements ui/Prisc.Ui/Assets/Prisc.entitlements
+          --signEntitlements ui/Flick.Ui/Assets/Flick.entitlements
           --signAppIdentity "$APP_IDENTITY" --signInstallIdentity "$INSTALL_IDENTITY"
           --notaryProfile velopack-profile --keychain "$KEYCHAIN_PATH"
         shell: bash

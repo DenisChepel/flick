@@ -1,0 +1,18 @@
+<Solution>
+  <Project Path="ui/Flick.Drawing/Flick.Drawing.csproj" />
+  <Project Path="ui/Flick.Drawing.Tests/Flick.Drawing.Tests.csproj" />
+  <Project Path="ui/Flick.Geometry/Flick.Geometry.csproj" />
+  <Project Path="ui/Flick.Interop/Flick.Interop.csproj" />
+  <Project Path="ui/Flick.Interop.Tests/Flick.Interop.Tests.csproj" />
+  <Project Path="ui/Flick.Ipc/Flick.Ipc.csproj" />
+  <Project Path="ui/Flick.Ipc.Tests/Flick.Ipc.Tests.csproj" />
+  <Project Path="ui/Flick.Shared/Flick.Shared.csproj" />
+  <Project Path="ui/Flick.Shared.Tests/Flick.Shared.Tests.csproj" />
+  <Project Path="ui/Flick.Ui/Flick.Ui.csproj" />
+  <Project Path="ui/Flick.Upload/Flick.Upload.csproj" />
+  <Project Path="ui/Flick.VideoRender/Flick.VideoRender.csproj" />
+  <Project Path="ui/Flick.VideoSDK/Flick.VideoSDK.csproj" />
+  <Project Path="ui/Flick.VideoSDK.Tests/Flick.VideoSDK.Tests.csproj" />
+  <Project Path="tools/cursor-generator/CursorGenerator.csproj" />
+  <Project Path="tools/background-tiles/BackgroundTiles.csproj" />
+</Solution>
